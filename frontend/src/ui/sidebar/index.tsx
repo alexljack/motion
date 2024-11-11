@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+
 import cn from "../../utils/cn";
 
 const Sidebar = () => {
@@ -25,12 +27,27 @@ const Sidebar = () => {
         {collapsed ? <span>F</span> : <span>Fort</span>}
       </div>
       <div className="h-full flex flex-col gap-2">
-        <div className={linkStyles}>1</div>
-        <div className={linkStyles}>2</div>
-        <div className={linkStyles}>3</div>
-        <div className={linkStyles}>4</div>
-        <div className={linkStyles}>5</div>
-        <div className={linkStyles}>6</div>
+        <div className={linkStyles}>
+          <Link to="/" className="[&.active]:font-bold">
+            Home
+          </Link>
+        </div>
+        <div className={linkStyles}>
+          <Link to="/exercises" className="[&.active]:font-bold">
+            Exercises
+          </Link>
+        </div>
+        <div className={linkStyles}>
+          {" "}
+          <Link to="/workouts" className="[&.active]:font-bold">
+            Workouts
+          </Link>
+        </div>
+        <div className={linkStyles}>
+          <Link to="/about" className="[&.active]:font-bold">
+            About
+          </Link>
+        </div>
       </div>
     </div>
   );
