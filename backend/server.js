@@ -1,10 +1,16 @@
 import express from "express";
+import dotenv from "dotenv";
+
 import workouts from "./data/workouts.js";
 
-const port = 8000;
+const envFile = `.env.${process.env.NODE_ENV || "development"}`;
+dotenv.config({ path: envFile });
+
+const port = process.env.PORT || 9000;
 
 const app = express();
 
+// console.log("PORT:", process.env.PORT, "ENV:", process.env.NODE_ENV);
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
