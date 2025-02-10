@@ -1,4 +1,4 @@
-import mongoose, { set } from "mongoose";
+import mongoose from "mongoose";
 
 const userWorkoutSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -10,15 +10,14 @@ const userWorkoutSchema = new mongoose.Schema({
   exercises: [
     {
       exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" },
-      sets: [
-        {
-          repetitions: { type: Number, required: true },
-          weight: { type: Number, required: true },
-        },
-      ],
+      repetitions: { type: Number, required: true },
+      sets: { type: Number, required: true },
+      weight: { type: Number, required: true },
     },
   ],
   createdAt: { type: Date, default: Date.now },
+  notes: String,
+  rating: { type: Number, required: true },
 });
 
 export default mongoose.model("UserWorkout", userWorkoutSchema);

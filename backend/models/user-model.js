@@ -20,6 +20,18 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    height: {
+      type: Number,
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    goal: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
