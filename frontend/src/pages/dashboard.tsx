@@ -1,11 +1,9 @@
-import React from "react";
-
 const Dashboard = () => {
-  console.log("PORT2>>", import.meta.env.VITE_PORT);
   return (
     <div className="border h-full w-full">
+      <h1>Dashboard</h1>
       <div></div>
-      <div>Dashboard</div>
+      <div></div>
     </div>
   );
 };
