@@ -5,4 +5,6 @@ const setsSchema = new mongoose.Schema({
   weight: { type: Number, required: true },
 });
 
-export default mongoose.model("Set", setsSchema);
+const Set = mongoose.model("Set", setsSchema);
+
+export default Set;

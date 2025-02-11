@@ -20,4 +20,6 @@ const userWorkoutSchema = new mongoose.Schema({
   rating: { type: Number, required: true },
 });
 
-export default mongoose.model("UserWorkout", userWorkoutSchema);
+const UserWorkout = mongoose.model("UserWorkout", userWorkoutSchema);
+
+export default UserWorkout;

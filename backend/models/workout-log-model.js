@@ -15,4 +15,6 @@ const workoutLogSchema = new mongoose.Schema({
   notes: String, // User can add workout notes
 });
 
-module.exports = mongoose.model("WorkoutLog", workoutLogSchema);
+const WorkoutLog = mongoose.model("WorkoutLog", workoutLogSchema);
+
+export default WorkoutLog;

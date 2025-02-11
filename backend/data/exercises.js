@@ -1,4 +1,4 @@
-const workouts = [
+const exercises = [
   {
     name: "Push Ups",
     category: "Upper Body",
@@ -149,4 +149,4 @@ const workouts = [
   },
 ];
 
-export default workouts;
+export default exercises;

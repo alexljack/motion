@@ -25,12 +25,14 @@ const importData = async () => {
     const sampleExercises = exercises.map((exercise) => {
       return { ...exercise, user: adminUser };
     });
-    const sampleWorkouts = workouts.map((workout) => {
-      return { ...workout, user: adminUser };
-    });
+    // const sampleWorkouts = workouts.map((workout) => {
+    //   return { ...workout, user: adminUser };
+    // });
 
-    const createdExercises = await Exercise.insertMany(sampleExercises);
-    const createdWorkouts = await Workout.insertMany(sampleWorkouts);
+    // const createdExercises =
+    await Exercise.insertMany(sampleExercises);
+    // const createdWorkouts =
+    // await Workout.insertMany(sampleWorkouts);
 
     console.log("Data Imported!".green.inverse);
     process.exit();
