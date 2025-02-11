@@ -28,10 +28,12 @@ const userSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    goal: {
-      type: String,
-      required: true,
-    },
+    goals: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Goal",
+      },
+    ],
   },
   {
     timestamps: true,
