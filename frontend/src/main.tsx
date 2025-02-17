@@ -13,6 +13,8 @@ import "./index.css";
 import App from "./App.tsx";
 import Dashboard from "./pages/dashboard.tsx";
 import Exercises from "./pages/exercises.tsx";
+import ExerciseView from "./pages/exercise-view.tsx";
+import GoalsView from "./pages/goals.tsx";
 import Workouts from "./pages/workouts.tsx";
 
 const About = () => (
@@ -38,6 +40,18 @@ const exercisesRoute = createRoute({
   component: Exercises,
 });
 
+const exerciseViewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/exercises/:id",
+  component: ExerciseView,
+});
+
+const goalsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/goals",
+  component: GoalsView,
+});
+
 const workoutsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workouts",
@@ -54,6 +68,8 @@ const aboutRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   exercisesRoute,
+  exerciseViewRoute,
+  goalsRoute,
   workoutsRoute,
   aboutRoute,
 ]);
