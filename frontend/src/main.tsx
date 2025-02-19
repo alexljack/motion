@@ -12,16 +12,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import App from "./App.tsx";
 import Dashboard from "./pages/dashboard.tsx";
-import Exercises from "./pages/exercises.tsx";
-import ExerciseView from "./pages/exercise-view.tsx";
-import GoalsView from "./pages/goals.tsx";
-import Workouts from "./pages/workouts.tsx";
-
-const About = () => (
-  <div>
-    <h1 className="text-3xl font-bold underline">About Us</h1>
-  </div>
-);
+// import Exercises from "./pages/exercises.tsx";
+// import ExerciseView from "./pages/exercise-view.tsx";
+// import GoalsView from "./pages/goals.tsx";
+// import Workouts from "./pages/workouts.tsx";
 
 // Define routes with required properties
 const rootRoute = createRootRoute({
@@ -34,44 +28,38 @@ const indexRoute = createRoute({
   component: Dashboard,
 });
 
-const exercisesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/exercises",
-  component: Exercises,
-});
+// const exercisesRoute = createRoute({
+//   getParentRoute: () => rootRoute,
+//   path: "/exercises",
+//   component: Exercises,
+// });
 
-const exerciseViewRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/exercises/:id",
-  component: ExerciseView,
-});
+// const exerciseViewRoute = createRoute({
+//   getParentRoute: () => rootRoute,
+//   path: "/exercises/:id",
+//   component: ExerciseView,
+// });
 
-const goalsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/goals",
-  component: GoalsView,
-});
+// const goalsRoute = createRoute({
+//   getParentRoute: () => rootRoute,
+//   path: "/goals",
+//   component: GoalsView,
+// });
 
-const workoutsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/workouts",
-  component: Workouts,
-});
-
-const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/about",
-  component: About,
-});
+// const workoutsRoute = createRoute({
+//   getParentRoute: () => rootRoute,
+//   path: "/workouts",
+//   component: Workouts,
+// });
 
 // Create the router with the root route as the parent
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  exercisesRoute,
-  exerciseViewRoute,
-  goalsRoute,
-  workoutsRoute,
-  aboutRoute,
+  // exercisesRoute,
+  // exerciseViewRoute,
+  // goalsRoute,
+  // workoutsRoute,
+  // aboutRoute,
 ]);
 
 const router = createRouter({ routeTree });

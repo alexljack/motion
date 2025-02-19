@@ -8,92 +8,197 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as ExercisesImport } from "./routes/exercises";
+import { Route as IndexImport } from "./routes/index";
+import { Route as WorkoutsIndexImport } from "./routes/workouts/index";
+import { Route as WorkoutsIdImport } from "./routes/workouts/$id";
+import { Route as ExercisesIdImport } from "./routes/exercises.$id";
 
 // Create Virtual Routes
 
-const AboutLazyImport = createFileRoute('/about')()
-const IndexLazyImport = createFileRoute('/')()
+const AboutLazyImport = createFileRoute("/about")();
 
 // Create/Update Routes
 
 const AboutLazyRoute = AboutLazyImport.update({
-  id: '/about',
-  path: '/about',
+  id: "/about",
+  path: "/about",
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+} as any).lazy(() => import("./routes/about.lazy").then((d) => d.Route));
 
-const IndexLazyRoute = IndexLazyImport.update({
-  id: '/',
-  path: '/',
+const ExercisesRoute = ExercisesImport.update({
+  id: "/exercises",
+  path: "/exercises",
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any);
+
+const IndexRoute = IndexImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const WorkoutsIndexRoute = WorkoutsIndexImport.update({
+  id: "/workouts/",
+  path: "/workouts/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const WorkoutsIdRoute = WorkoutsIdImport.update({
+  id: "/workouts/$id",
+  path: "/workouts/$id",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const ExercisesIdRoute = ExercisesIdImport.update({
+  id: "/$id",
+  path: "/$id",
+  getParentRoute: () => ExercisesRoute,
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
-      parentRoute: typeof rootRoute
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/exercises": {
+      id: "/exercises";
+      path: "/exercises";
+      fullPath: "/exercises";
+      preLoaderRoute: typeof ExercisesImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/about": {
+      id: "/about";
+      path: "/about";
+      fullPath: "/about";
+      preLoaderRoute: typeof AboutLazyImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/exercises/$id": {
+      id: "/exercises/$id";
+      path: "/$id";
+      fullPath: "/exercises/$id";
+      preLoaderRoute: typeof ExercisesIdImport;
+      parentRoute: typeof ExercisesImport;
+    };
+    "/workouts/$id": {
+      id: "/workouts/$id";
+      path: "/workouts/$id";
+      fullPath: "/workouts/$id";
+      preLoaderRoute: typeof WorkoutsIdImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/workouts/": {
+      id: "/workouts/";
+      path: "/workouts";
+      fullPath: "/workouts";
+      preLoaderRoute: typeof WorkoutsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
+interface ExercisesRouteChildren {
+  ExercisesIdRoute: typeof ExercisesIdRoute;
+}
+
+const ExercisesRouteChildren: ExercisesRouteChildren = {
+  ExercisesIdRoute: ExercisesIdRoute,
+};
+
+const ExercisesRouteWithChildren = ExercisesRoute._addFileChildren(
+  ExercisesRouteChildren
+);
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  "/": typeof IndexRoute;
+  "/exercises": typeof ExercisesRouteWithChildren;
+  "/about": typeof AboutLazyRoute;
+  "/exercises/$id": typeof ExercisesIdRoute;
+  "/workouts/$id": typeof WorkoutsIdRoute;
+  "/workouts": typeof WorkoutsIndexRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  "/": typeof IndexRoute;
+  "/exercises": typeof ExercisesRouteWithChildren;
+  "/about": typeof AboutLazyRoute;
+  "/exercises/$id": typeof ExercisesIdRoute;
+  "/workouts/$id": typeof WorkoutsIdRoute;
+  "/workouts": typeof WorkoutsIndexRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/exercises": typeof ExercisesRouteWithChildren;
+  "/about": typeof AboutLazyRoute;
+  "/exercises/$id": typeof ExercisesIdRoute;
+  "/workouts/$id": typeof WorkoutsIdRoute;
+  "/workouts/": typeof WorkoutsIndexRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/exercises"
+    | "/about"
+    | "/exercises/$id"
+    | "/workouts/$id"
+    | "/workouts";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/exercises"
+    | "/about"
+    | "/exercises/$id"
+    | "/workouts/$id"
+    | "/workouts";
+  id:
+    | "__root__"
+    | "/"
+    | "/exercises"
+    | "/about"
+    | "/exercises/$id"
+    | "/workouts/$id"
+    | "/workouts/";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  AboutLazyRoute: typeof AboutLazyRoute
+  IndexRoute: typeof IndexRoute;
+  ExercisesRoute: typeof ExercisesRouteWithChildren;
+  AboutLazyRoute: typeof AboutLazyRoute;
+  WorkoutsIdRoute: typeof WorkoutsIdRoute;
+  WorkoutsIndexRoute: typeof WorkoutsIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  IndexRoute: IndexRoute,
+  ExercisesRoute: ExercisesRouteWithChildren,
   AboutLazyRoute: AboutLazyRoute,
-}
+  WorkoutsIdRoute: WorkoutsIdRoute,
+  WorkoutsIndexRoute: WorkoutsIndexRoute,
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -102,14 +207,33 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/exercises",
+        "/about",
+        "/workouts/$id",
+        "/workouts/"
       ]
     },
     "/": {
-      "filePath": "index.lazy.tsx"
+      "filePath": "index.tsx"
+    },
+    "/exercises": {
+      "filePath": "exercises.tsx",
+      "children": [
+        "/exercises/$id"
+      ]
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/exercises/$id": {
+      "filePath": "exercises.$id.tsx",
+      "parent": "/exercises"
+    },
+    "/workouts/$id": {
+      "filePath": "workouts/$id.tsx"
+    },
+    "/workouts/": {
+      "filePath": "workouts/index.tsx"
     }
   }
 }
