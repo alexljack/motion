@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Exercise, useListExercises } from "../../api/use-list-exercises";
 
 export const Route = createFileRoute("/exercises/")({
@@ -7,14 +7,25 @@ export const Route = createFileRoute("/exercises/")({
 
 function ExerciseIndex() {
   const { data } = useListExercises();
+
   return (
     <div>
-      Hello "/exercises/"!
       <div>Exercises</div>
-      {data?.map((exercise: Exercise) => {
-        console.log(exercise);
-        return <div key={exercise._id}>{exercise.name}</div>;
-      })}
+      <div className="grid grid-cols-3">
+        {data?.map((exercise: Exercise) => {
+          console.log(exercise);
+          return (
+            <Link to="/exercises/$id" params={{ id: exercise._id }}>
+              <div
+                className="h-12 border bg-orange-500 text-center content-center cursor-pointer"
+                key={exercise._id}
+              >
+                {exercise.name}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
