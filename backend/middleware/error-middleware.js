@@ -18,3 +18,5 @@ const errorHandler = (err, req, res, next) => {
     stack: import.meta.env.NODE_ENV === "production" ? "🥞" : err.stack,
   });
 };
+
+export { errorHandler, notFound };
