@@ -9,7 +9,7 @@ const PageWrapper = ({
   pageName = "Page Name",
 }: PropsWithChildren<PageWrapperType>) => {
   return (
-    <div className="p-2">
+    <div className="p-2 h-full">
       <div>{pageName}</div>
       {children}
     </div>
