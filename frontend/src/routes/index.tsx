@@ -25,7 +25,6 @@ function Homepage() {
         <div className="bg-purple-500 col-start-3 col-end-5 row-start-3 row-end-5">
           5
         </div>
-        <div></div>
       </div>
     </PageWrapper>
   );
