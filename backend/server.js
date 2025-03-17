@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middleware/error-middleware.js";
 import exerciseRoutes from "./routes/exercise-routes.js";
+// import userRoutes from "./routes/user-routes.js";
 
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
