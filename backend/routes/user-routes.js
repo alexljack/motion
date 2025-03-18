@@ -12,10 +12,10 @@ import {
   updateUser,
 } from "../controllers/user-controller.js";
 
-router.route("/").get(getUsers);
-router.route("/").get(getUsers);
-router.route("/users").get(getExercises);
-router.route("/users/:id").get(getExercises);
-router.route("/:id").get(getExerciseById);
+router.route("/").post(registerUser).get(getUsers);
+router.post("/logout", logoutUser);
+router.post("/login", authUser);
+router.route("/profile").get(getUserProfile).put(updateUserProfile);
+router.route("/:id").delete(deleteUser).get(getUserById).put(updateUser);
 
 export default router;
