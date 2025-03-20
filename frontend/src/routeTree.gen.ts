@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RegisterImport } from './routes/register'
 import { Route as AuthImport } from './routes/auth'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
@@ -20,6 +21,12 @@ import { Route as WorkoutsIdImport } from './routes/workouts/$id'
 import { Route as ExercisesIdImport } from './routes/exercises/$id'
 
 // Create/Update Routes
+
+const RegisterRoute = RegisterImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AuthRoute = AuthImport.update({
   id: '/auth',
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
     '/exercises/$id': {
       id: '/exercises/$id'
       path: '/exercises/$id'
@@ -125,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
@@ -135,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
@@ -146,6 +162,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises/': typeof ExercisesIndexRoute
@@ -158,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/register'
     | '/exercises/$id'
     | '/workouts/$id'
     | '/exercises'
@@ -167,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/register'
     | '/exercises/$id'
     | '/workouts/$id'
     | '/exercises'
@@ -176,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/register'
     | '/exercises/$id'
     | '/workouts/$id'
     | '/exercises/'
@@ -187,6 +207,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  RegisterRoute: typeof RegisterRoute
   ExercisesIdRoute: typeof ExercisesIdRoute
   WorkoutsIdRoute: typeof WorkoutsIdRoute
   ExercisesIndexRoute: typeof ExercisesIndexRoute
@@ -197,6 +218,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  RegisterRoute: RegisterRoute,
   ExercisesIdRoute: ExercisesIdRoute,
   WorkoutsIdRoute: WorkoutsIdRoute,
   ExercisesIndexRoute: ExercisesIndexRoute,
@@ -216,6 +238,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/auth",
+        "/register",
         "/exercises/$id",
         "/workouts/$id",
         "/exercises/",
@@ -230,6 +253,9 @@ export const routeTree = rootRoute
     },
     "/auth": {
       "filePath": "auth.tsx"
+    },
+    "/register": {
+      "filePath": "register.tsx"
     },
     "/exercises/$id": {
       "filePath": "exercises/$id.tsx"
