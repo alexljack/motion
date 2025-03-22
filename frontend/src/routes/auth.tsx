@@ -15,12 +15,16 @@ function RouteComponent() {
   const methods = useForm<FormData>();
   const { data, mutate } = useAuth();
 
-  const onSubmit = (formData: any) => {
-    mutate(formData);
+  const onSubmit = (formData: FormData) => {
+    mutate(formData, {
+      onSuccess: (res) => {
+        console.log(res);
+      },
+    });
   };
 
   if (data) {
-    localStorage.setItem("user", data);
+    localStorage.setItem("user", JSON.stringify(data));
   }
 
   return (
