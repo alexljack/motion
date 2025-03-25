@@ -19,7 +19,7 @@ type FormData = {
 
 function RouteComponent() {
   const methods = useForm<FormData>();
-  const { mutate } = useAuth();
+  const { isPending, mutate } = useAuth();
   const goTo = useNavigate();
   const location = useLocation();
   const sp = new URLSearchParams(location.search);
@@ -55,24 +55,33 @@ function RouteComponent() {
             <div>
               <label>
                 Email
-                <input placeholder="email" {...methods.register("email")} />
+                <input
+                  disabled={isPending}
+                  placeholder="email"
+                  {...methods.register("email")}
+                />
               </label>
             </div>
             <div>
               <label>
                 Password
                 <input
+                  disabled={isPending}
                   placeholder="password"
                   {...methods.register("password")}
                 />
               </label>
             </div>
           </div>
-          <button type="submit">Login</button>
+          <button disabled={isPending} type="submit">
+            Login
+          </button>
         </form>
       </FormProvider>
       New user?
-      <Link to="/register">Register</Link>
+      <Link to="/register" search={redirect ? { redirect } : undefined}>
+        Register
+      </Link>
     </div>
   );
 }
