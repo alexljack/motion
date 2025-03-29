@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+
 import { Exercise } from "./use-list-exercises";
 
 const useFindExercise = (id: string) => {
