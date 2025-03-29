@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 
 import useRegister from "../api/authentication/use-register";
@@ -92,6 +92,8 @@ function RouteComponent() {
           </button>
         </form>
       </FormProvider>
+      Already a user?
+      <Link to="/auth">Register</Link>
     </div>
   );
 }
