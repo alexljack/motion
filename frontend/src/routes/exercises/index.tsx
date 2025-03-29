@@ -1,7 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Exercise, useListExercises } from "../../api/use-list-exercises";
 
 export const Route = createFileRoute("/exercises/")({
+  beforeLoad: async ({ location }) => {
+    const user = localStorage.getItem("user");
+
+    if (!user) {
+      throw redirect({
+        to: "/auth",
+        search: {
+          // Use the current location to power a redirect after login
+          // (Do not use `router.state.resolvedLocation` as it can
+          // potentially lag behind the actual current location)
+          redirect: location.href,
+        },
+      });
+    }
+  },
   component: ExerciseIndex,
 });
 
