@@ -5,7 +5,7 @@ import {
   useLocation,
   useNavigate,
 } from "@tanstack/react-router";
-import useAuth from "../api/use-auth";
+import useAuth from "../api/authentication/use-auth";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/auth")({
