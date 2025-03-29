@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
 
 type RegisterResponse = {
@@ -18,12 +18,20 @@ type RegisterCredentials = {
   height: number;
 };
 
-const useRegister = () => {
-  return useMutation<RegisterResponse, Error, RegisterCredentials>({
+const useRegister = (
+  options?: UseMutationOptions<
+    RegisterResponse,
+    Error,
+    RegisterCredentials,
+    unknown
+  >
+) => {
+  return useMutation<RegisterResponse, Error, RegisterCredentials, unknown>({
     mutationFn: async (data: RegisterCredentials) => {
       const response = await axios.post("/api/users", data);
-      return response.data;
+      return response.data as RegisterResponse;
     },
+    ...options,
   });
 };
 
