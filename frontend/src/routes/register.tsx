@@ -19,7 +19,7 @@ function RouteComponent() {
   const goTo = useNavigate();
   const methods = useForm<FormData>();
 
-  const { mutate: register } = useRegister({
+  const { isPending, mutate: register } = useRegister({
     onError: (err) => {
       console.log(err);
     },
@@ -32,7 +32,6 @@ function RouteComponent() {
   });
 
   const onSubmit = (formData: FormData) => {
-    console.log(formData);
     register(formData);
   };
 
@@ -45,7 +44,7 @@ function RouteComponent() {
             <label>
               Email
               <input
-                // disabled={isPending}
+                disabled={isPending}
                 placeholder="email"
                 {...methods.register("email")}
               />
@@ -53,7 +52,7 @@ function RouteComponent() {
             <label>
               Name
               <input
-                // disabled={isPending}
+                disabled={isPending}
                 placeholder="name"
                 {...methods.register("name")}
               />
@@ -61,7 +60,7 @@ function RouteComponent() {
             <label>
               Height
               <input
-                // disabled={isPending}
+                disabled={isPending}
                 placeholder="height"
                 type="number"
                 {...methods.register("height")}
@@ -70,7 +69,7 @@ function RouteComponent() {
             <label>
               Weight
               <input
-                // disabled={isPending}
+                disabled={isPending}
                 placeholder="weight"
                 type="number"
                 {...methods.register("weight")}
@@ -81,17 +80,14 @@ function RouteComponent() {
               <label>
                 Password
                 <input
-                  // disabled={isPending}
+                  disabled={isPending}
                   placeholder="password"
                   {...methods.register("password")}
                 />
               </label>
             </div>
           </div>
-          <button
-            // disabled={isPending}
-            type="submit"
-          >
+          <button disabled={isPending} type="submit">
             Register
           </button>
         </form>
