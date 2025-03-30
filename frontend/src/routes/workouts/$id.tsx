@@ -1,9 +1,25 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/workouts/$id')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/workouts/$id")({
+  beforeLoad: async ({ location }) => {
+    const user = localStorage.getItem("user");
 
-function RouteComponent() {
-  return <div>Hello "/workouts/$id"!</div>
+    if (!user) {
+      throw redirect({
+        to: "/auth",
+        search: {
+          // Use the current location to power a redirect after login
+          // (Do not use `router.state.resolvedLocation` as it can
+          // potentially lag behind the actual current location)
+          redirect: location.href,
+        },
+      });
+    }
+  },
+  component: WorkoutView,
+  loader: () => <div>Loading...</div>,
+});
+
+function WorkoutView() {
+  return <div>Hello "/workouts/$id"!</div>;
 }
