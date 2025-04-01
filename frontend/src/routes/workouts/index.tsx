@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import useListWorkouts from "../../api/use-list-workouts";
 
 export const Route = createFileRoute("/workouts/")({
   beforeLoad: async ({ location }) => {
@@ -20,5 +21,12 @@ export const Route = createFileRoute("/workouts/")({
 });
 
 function WorkoutIndex() {
-  return <div>Hello "/workouts/"!</div>;
+  const { data: workouts } = useListWorkouts();
+  console.log("workouts", workouts);
+  return (
+    <div>
+      Hello "/workouts/"!
+      <p>Select a workout from below</p>
+    </div>
+  );
 }
