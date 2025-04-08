@@ -11,7 +11,7 @@ import workoutRoutes from "./routes/workout-routes.js";
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 8000;
 connectDB();
 
 const app = express();

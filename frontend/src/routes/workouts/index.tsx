@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import useListWorkouts from "../../api/use-list-workouts";
+import useListWorkouts from "../../api/workouts/use-list-workouts";
 
 export const Route = createFileRoute("/workouts/")({
   beforeLoad: async ({ location }) => {

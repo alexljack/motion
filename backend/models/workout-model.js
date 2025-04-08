@@ -19,9 +19,9 @@ const workoutSchema = new mongoose.Schema(
     //   },
     // ],
     exercises: [{ type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }],
-    rating: { type: Number, required: true },
+    // rating: { type: Number, required: true },
     // sets: [setsSchema],
-    type: { type: String, required: true },
+    // type: { type: String, required: true },
   },
   {
     timestamps: true,

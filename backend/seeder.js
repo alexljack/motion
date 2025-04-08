@@ -25,14 +25,37 @@ const importData = async () => {
     const sampleExercises = exercises.map((exercise) => {
       return { ...exercise, user: adminUser };
     });
-    // const sampleWorkouts = workouts.map((workout) => {
-    //   return { ...workout, user: adminUser };
-    // });
 
-    // const createdExercises =
-    await Exercise.insertMany(sampleExercises);
-    // const createdWorkouts =
-    // await Workout.insertMany(sampleWorkouts);
+    const createdExercises = await Exercise.insertMany(sampleExercises);
+
+    const exerciseMap = {};
+    createdExercises.forEach((exercise) => {
+      exerciseMap[exercise.name.toLowerCase()] = exercise._id;
+    });
+
+    const sampleWorkouts = workouts.map((workout) => {
+      const workoutWithIds = { ...workout, user: adminUser };
+
+      // Replace exercise names/objects with their ObjectIDs
+      if (workout.exercises && workout.exercises.length > 0) {
+        workoutWithIds.exercises = workout.exercises.map((exercise) => {
+          // Handle if exercise is just a name (string)
+          if (typeof exercise === "string") {
+            return exerciseMap[exercise.toLowerCase()];
+          }
+          // Handle if exercise is an object with a name property
+          else if (exercise.name) {
+            return exerciseMap[exercise.name.toLowerCase()];
+          }
+          // Return as is if already an ObjectId
+          return exercise;
+        });
+      }
+
+      return workoutWithIds;
+    });
+
+    await Workout.insertMany(sampleWorkouts);
 
     console.log("Data Imported!".green.inverse);
     process.exit();

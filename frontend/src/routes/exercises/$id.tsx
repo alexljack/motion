@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useParams } from "@tanstack/react-router";
-import useFindExercise from "../../api/use-find-exercise";
+import useFindExercise from "../../api/exercises/use-find-exercise";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
 
 export const Route = createFileRoute("/exercises/$id")({
