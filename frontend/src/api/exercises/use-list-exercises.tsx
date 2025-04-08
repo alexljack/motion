@@ -16,11 +16,10 @@ type Exercise = {
 
 export const useListExercises = () => {
   return useQuery<Exercise[]>({
-    queryKey: ["list-all-exercises"], // Pass the key as an array
+    queryKey: ["list-all-exercises"],
     queryFn: async () => {
-      // const response = await axios.get("http://localhost:3001/exercises");
       const response = await axios.get("/api/exercises");
-      return response.data; // Ensure the function returns the data
+      return response.data;
     },
   });
 };
