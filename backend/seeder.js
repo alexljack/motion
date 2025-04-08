@@ -25,14 +25,26 @@ const importData = async () => {
     const sampleExercises = exercises.map((exercise) => {
       return { ...exercise, user: adminUser };
     });
-    // const sampleWorkouts = workouts.map((workout) => {
-    //   return { ...workout, user: adminUser };
-    // });
 
-    // const createdExercises =
-    await Exercise.insertMany(sampleExercises);
-    // const createdWorkouts =
-    // await Workout.insertMany(sampleWorkouts);
+    const createdExercises = await Exercise.insertMany(sampleExercises);
+
+    const exerciseMap = {};
+    createdExercises.forEach((exercise) => {
+      exerciseMap[exercise.name.toLowerCase()] = exercise._id;
+    });
+
+    const sampleWorkouts = workouts.map((workout) => {
+      // Just add the user ID and keep the exercise objects as they are
+      return {
+        ...workout,
+        user: adminUser,
+        // No need to transform the exercises array
+      };
+    });
+
+    await Workout.insertMany(sampleWorkouts);
+
+    await Workout.insertMany(sampleWorkouts);
 
     console.log("Data Imported!".green.inverse);
     process.exit();

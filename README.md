@@ -1,4 +1,4 @@
-# FORT APP
+# MOTION APP
 
 # Getting Started
 
@@ -28,5 +28,5 @@ to run the app
 destroy database - node backend/seeder -d
 
 ```bash
-npm run development
+npm run develop
 ```

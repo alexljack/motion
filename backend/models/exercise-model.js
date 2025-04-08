@@ -6,7 +6,7 @@ const exerciseSchema = new mongoose.Schema({
     required: true,
   },
   category: {
-    type: String,
+    type: [String],
     required: true,
   },
   image: {
@@ -26,7 +26,7 @@ const exerciseSchema = new mongoose.Schema({
     required: true,
   },
   equipment: {
-    type: String,
+    type: [String],
     required: true,
   },
   mainTargetMuscle: {

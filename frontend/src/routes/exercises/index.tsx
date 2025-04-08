@@ -1,5 +1,8 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Exercise, useListExercises } from "../../api/use-list-exercises";
+import {
+  Exercise,
+  useListExercises,
+} from "../../api/exercises/use-list-exercises";
 
 export const Route = createFileRoute("/exercises/")({
   beforeLoad: async ({ location }) => {
@@ -30,7 +33,11 @@ function ExerciseIndex() {
         {data?.map((exercise: Exercise) => {
           console.log(exercise);
           return (
-            <Link to="/exercises/$id" params={{ id: exercise._id }}>
+            <Link
+              to="/exercises/$id"
+              params={{ id: exercise._id }}
+              key={exercise._id}
+            >
               <div
                 className="h-12 border bg-orange-500 text-center content-center cursor-pointer"
                 key={exercise._id}
