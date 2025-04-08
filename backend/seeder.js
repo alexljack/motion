@@ -34,26 +34,15 @@ const importData = async () => {
     });
 
     const sampleWorkouts = workouts.map((workout) => {
-      const workoutWithIds = { ...workout, user: adminUser };
-
-      // Replace exercise names/objects with their ObjectIDs
-      if (workout.exercises && workout.exercises.length > 0) {
-        workoutWithIds.exercises = workout.exercises.map((exercise) => {
-          // Handle if exercise is just a name (string)
-          if (typeof exercise === "string") {
-            return exerciseMap[exercise.toLowerCase()];
-          }
-          // Handle if exercise is an object with a name property
-          else if (exercise.name) {
-            return exerciseMap[exercise.name.toLowerCase()];
-          }
-          // Return as is if already an ObjectId
-          return exercise;
-        });
-      }
-
-      return workoutWithIds;
+      // Just add the user ID and keep the exercise objects as they are
+      return {
+        ...workout,
+        user: adminUser,
+        // No need to transform the exercises array
+      };
     });
+
+    await Workout.insertMany(sampleWorkouts);
 
     await Workout.insertMany(sampleWorkouts);
 
