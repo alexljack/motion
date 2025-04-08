@@ -3,15 +3,15 @@ import axios from "axios";
 
 type Exercise = {
   _id: string;
-  name: string;
   category: string;
-  image: string;
   description: string;
-  duration: number;
   difficulty: string;
+  duration: number;
   equipment: string;
+  image: string;
   mainTargetMuscle: string;
-  muscleGroup: string;
+  muscleGroup: string[];
+  name: string;
 };
 
 type Workout = {
