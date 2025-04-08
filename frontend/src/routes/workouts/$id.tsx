@@ -28,8 +28,10 @@ function WorkoutView() {
   console.log("workout", data);
   return (
     <PageWrapper pageName={data?.name ?? "Loading..."}>
-      <p>{data?.description}</p>
-      <p>{data?.duration}</p>
+      <div className="w-full flex justify-between">
+        <p className="text-lg">{data?.description}</p>
+        <p className="text-lg">Duration: {data?.duration}</p>
+      </div>
       <div className="grid grid-cols-3">
         {data?.exercises.map((ex) => {
           return (
@@ -38,10 +40,6 @@ function WorkoutView() {
               key={ex?._id}
             >
               <h3>{ex?.name}</h3>
-              {/* <p>{ex?.description}</p>
-              <p>{ex?.category}</p>
-              <p>{ex?.difficulty}</p>
-              <p>{ex?.equipment}</p> */}
             </div>
           );
         })}
