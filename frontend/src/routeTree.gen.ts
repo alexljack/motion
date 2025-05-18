@@ -19,7 +19,7 @@ import { Route as WorkoutsIndexImport } from './routes/workouts/index'
 import { Route as LogsIndexImport } from './routes/logs/index'
 import { Route as ExercisesIndexImport } from './routes/exercises/index'
 import { Route as WorkoutsIdImport } from './routes/workouts/$id'
-import { Route as LogsCreateImport } from './routes/logs/$create'
+import { Route as LogsNewImport } from './routes/logs/$new'
 import { Route as ExercisesIdImport } from './routes/exercises/$id'
 
 // Create/Update Routes
@@ -72,9 +72,9 @@ const WorkoutsIdRoute = WorkoutsIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LogsCreateRoute = LogsCreateImport.update({
-  id: '/logs/$create',
-  path: '/logs/$create',
+const LogsNewRoute = LogsNewImport.update({
+  id: '/logs/$new',
+  path: '/logs/$new',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -123,11 +123,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExercisesIdImport
       parentRoute: typeof rootRoute
     }
-    '/logs/$create': {
-      id: '/logs/$create'
-      path: '/logs/$create'
-      fullPath: '/logs/$create'
-      preLoaderRoute: typeof LogsCreateImport
+    '/logs/$new': {
+      id: '/logs/$new'
+      path: '/logs/$new'
+      fullPath: '/logs/$new'
+      preLoaderRoute: typeof LogsNewImport
       parentRoute: typeof rootRoute
     }
     '/workouts/$id': {
@@ -169,7 +169,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$create': typeof LogsCreateRoute
+  '/logs/$new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
   '/logs': typeof LogsIndexRoute
@@ -182,7 +182,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$create': typeof LogsCreateRoute
+  '/logs/$new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
   '/logs': typeof LogsIndexRoute
@@ -196,7 +196,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$create': typeof LogsCreateRoute
+  '/logs/$new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises/': typeof ExercisesIndexRoute
   '/logs/': typeof LogsIndexRoute
@@ -211,7 +211,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$create'
+    | '/logs/$new'
     | '/workouts/$id'
     | '/exercises'
     | '/logs'
@@ -223,7 +223,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$create'
+    | '/logs/$new'
     | '/workouts/$id'
     | '/exercises'
     | '/logs'
@@ -235,7 +235,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$create'
+    | '/logs/$new'
     | '/workouts/$id'
     | '/exercises/'
     | '/logs/'
@@ -249,7 +249,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   RegisterRoute: typeof RegisterRoute
   ExercisesIdRoute: typeof ExercisesIdRoute
-  LogsCreateRoute: typeof LogsCreateRoute
+  LogsNewRoute: typeof LogsNewRoute
   WorkoutsIdRoute: typeof WorkoutsIdRoute
   ExercisesIndexRoute: typeof ExercisesIndexRoute
   LogsIndexRoute: typeof LogsIndexRoute
@@ -262,7 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   RegisterRoute: RegisterRoute,
   ExercisesIdRoute: ExercisesIdRoute,
-  LogsCreateRoute: LogsCreateRoute,
+  LogsNewRoute: LogsNewRoute,
   WorkoutsIdRoute: WorkoutsIdRoute,
   ExercisesIndexRoute: ExercisesIndexRoute,
   LogsIndexRoute: LogsIndexRoute,
@@ -284,7 +284,7 @@ export const routeTree = rootRoute
         "/auth",
         "/register",
         "/exercises/$id",
-        "/logs/$create",
+        "/logs/$new",
         "/workouts/$id",
         "/exercises/",
         "/logs/",
@@ -306,8 +306,8 @@ export const routeTree = rootRoute
     "/exercises/$id": {
       "filePath": "exercises/$id.tsx"
     },
-    "/logs/$create": {
-      "filePath": "logs/$create.tsx"
+    "/logs/$new": {
+      "filePath": "logs/$new.tsx"
     },
     "/workouts/$id": {
       "filePath": "workouts/$id.tsx"
