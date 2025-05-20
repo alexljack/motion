@@ -1,7 +1,7 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
 
-const useLogWorkout = (options: UseMutationOptions) => {
+const useLogWorkout = (options?: UseMutationOptions) => {
   return useMutation({
     mutationFn: async (formData) => {
       const res = await axios.post("/api/logs/", formData);
