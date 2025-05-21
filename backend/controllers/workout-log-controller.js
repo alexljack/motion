@@ -2,6 +2,28 @@
 import asyncHandler from "../middleware/async-handler.js";
 import WorkoutLog from "../models/workout-log-model.js";
 
+// @desc Create new workout log
+// @route POST /api/workout-logs
+// @access Private
+const createWorkoutLog = asyncHandler(async (req, res) => {
+  const { workout, exercises, notes } = req.body;
+
+  const workoutLog = await WorkoutLog.create({
+    user: req.user._id,
+    workout,
+    exercises,
+    notes,
+    date: new Date(),
+  });
+
+  if (workoutLog) {
+    res.status(201).json(workoutLog);
+  } else {
+    res.status(400);
+    throw new Error("Invalid workout log data");
+  }
+});
+
 // @desc    Log a completed workout
 // @route   POST /api/logs
 // @access  Private
@@ -133,4 +155,11 @@ const deleteLog = asyncHandler(async (req, res) => {
   res.json({ message: "Workout log removed" });
 });
 
-export { logWorkout, getUserLogs, getLogById, updateLog, deleteLog };
+export {
+  createWorkoutLog,
+  logWorkout,
+  getUserLogs,
+  getLogById,
+  updateLog,
+  deleteLog,
+};
