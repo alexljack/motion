@@ -7,6 +7,7 @@ import { errorHandler, notFound } from "./middleware/error-middleware.js";
 import exerciseRoutes from "./routes/exercise-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import workoutRoutes from "./routes/workout-routes.js";
+import workoutLogRoutes from "./routes/workout-log-routes.js";
 
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 app.use("/api/exercises", exerciseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/workouts", workoutRoutes);
+app.use("/api/logs", workoutLogRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

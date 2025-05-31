@@ -11,6 +11,14 @@ const Sidebar = () => {
     collapsed ? "w-11" : "w-48"
   );
 
+  const links = [
+    { to: "/", label: "Home" },
+    { to: "/exercises", label: "Exercises" },
+    { to: "/workouts", label: "Workouts" },
+    { to: "/logs", label: "Logs" },
+    { to: "/about", label: "About" },
+  ];
+
   return (
     <div
       className={cn(
@@ -27,27 +35,13 @@ const Sidebar = () => {
         {collapsed ? <span>F</span> : <span>Fort</span>}
       </div>
       <div className="h-full flex flex-col gap-2">
-        <div className={linkStyles}>
-          <Link to="/" className="[&.active]:font-bold">
-            Home
-          </Link>
-        </div>
-        <div className={linkStyles}>
-          <Link to="/exercises" className="[&.active]:font-bold">
-            Exercises
-          </Link>
-        </div>
-        <div className={linkStyles}>
-          {" "}
-          <Link to="/workouts" className="[&.active]:font-bold">
-            Workouts
-          </Link>
-        </div>
-        <div className={linkStyles}>
-          <Link to="/about" className="[&.active]:font-bold">
-            About
-          </Link>
-        </div>
+        {links.map((link) => (
+          <div key={link.to} className={linkStyles}>
+            <Link to={link.to} className="[&.active]:font-bold">
+              {link.label}
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );
