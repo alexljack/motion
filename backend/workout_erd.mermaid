@@ -1,0 +1,147 @@
+erDiagram
+    USER {
+        uuid id PK
+        string email UK
+        string username UK
+        string password_hash
+        string first_name
+        string last_name
+        date date_of_birth
+        enum gender
+        float weight
+        float height
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    WORKOUT_TEMPLATE {
+        uuid id PK
+        uuid user_id FK
+        string name
+        text description
+        enum difficulty_level
+        int estimated_duration_minutes
+        boolean is_public
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EXERCISE {
+        uuid id PK
+        string name UK
+        text description
+        enum category
+        enum muscle_groups "JSON array"
+        enum equipment_needed "JSON array"
+        text instructions
+        boolean is_compound
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    TEMPLATE_EXERCISE {
+        uuid id PK
+        uuid workout_template_id FK
+        uuid exercise_id FK
+        int order_index
+        int target_sets
+        int target_reps
+        float target_weight
+        int target_duration_seconds
+        int rest_seconds
+        text notes
+    }
+
+    WORKOUT_SESSION {
+        uuid id PK
+        uuid user_id FK
+        uuid workout_template_id FK "nullable"
+        string name
+        text notes
+        timestamp started_at
+        timestamp completed_at
+        enum status
+        int total_duration_seconds
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EXERCISE_SET {
+        uuid id PK
+        uuid workout_session_id FK
+        uuid exercise_id FK
+        int set_number
+        int reps
+        float weight
+        int duration_seconds
+        float distance
+        enum rpe
+        text notes
+        timestamp completed_at
+        timestamp created_at
+    }
+
+    BODY_MEASUREMENT {
+        uuid id PK
+        uuid user_id FK
+        enum measurement_type
+        float value
+        string unit
+        date measured_date
+        text notes
+        timestamp created_at
+    }
+
+    WORKOUT_GOAL {
+        uuid id PK
+        uuid user_id FK
+        enum goal_type
+        string title
+        text description
+        float target_value
+        string target_unit
+        date target_date
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PERSONAL_RECORD {
+        uuid id PK
+        uuid user_id FK
+        uuid exercise_id FK
+        enum record_type
+        float value
+        string unit
+        date achieved_date
+        uuid workout_session_id FK "reference to session where achieved"
+        timestamp created_at
+    }
+
+    %% Relationships
+    USER ||--o{ WORKOUT_TEMPLATE : creates
+    USER ||--o{ WORKOUT_SESSION : performs
+    USER ||--o{ BODY_MEASUREMENT : tracks
+    USER ||--o{ WORKOUT_GOAL : sets
+    USER ||--o{ PERSONAL_RECORD : achieves
+
+    WORKOUT_TEMPLATE ||--o{ TEMPLATE_EXERCISE : contains
+    WORKOUT_TEMPLATE ||--o{ WORKOUT_SESSION : "used_in (optional)"
+    
+    EXERCISE ||--o{ TEMPLATE_EXERCISE : "included_in"
+    EXERCISE ||--o{ EXERCISE_SET : performed
+    EXERCISE ||--o{ PERSONAL_RECORD : "record_for"
+
+    WORKOUT_SESSION ||--o{ EXERCISE_SET : contains
+
+    TEMPLATE_EXERCISE }o--|| WORKOUT_TEMPLATE : belongs_to
+    TEMPLATE_EXERCISE }o--|| EXERCISE : references
+
+    EXERCISE_SET }o--|| WORKOUT_SESSION : belongs_to
+    EXERCISE_SET }o--|| EXERCISE : performs
+
+    BODY_MEASUREMENT }o--|| USER : belongs_to
+    WORKOUT_GOAL }o--|| USER : belongs_to
+    PERSONAL_RECORD }o--|| USER : belongs_to
+    PERSONAL_RECORD }o--|| EXERCISE : for_exercise
+    PERSONAL_RECORD }o--|| WORKOUT_SESSION : achieved_in

@@ -1,0 +1,115 @@
+// backend/models/workout-session-model.js
+import mongoose from "mongoose";
+import exerciseSetSchema from "./exercise-set-model";
+
+const workoutSessionSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    name: { type: String, required: true },
+    // Optional reference to a workout template
+    basedOnWorkout: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workout",
+      required: false,
+    },
+    exercises: [exerciseSetSchema],
+
+    // Session tracking
+    startedAt: { type: Date, default: Date.now },
+    completedAt: { type: Date },
+    duration: { type: Number, default: 0 }, // total workout time in minutes
+    status: {
+      type: String,
+      enum: ["planned", "in-progress", "completed", "skipped"],
+      default: "planned",
+    },
+
+    // Workout metrics
+    totalSets: { type: Number, default: 0 },
+    totalReps: { type: Number, default: 0 },
+    totalWeight: { type: Number, default: 0 }, // total weight lifted
+    avgRpe: { type: Number, default: 0 },
+
+    // User feedback
+    notes: String,
+    rating: { type: Number, min: 1, max: 5 },
+    feeling: {
+      type: String,
+      enum: ["terrible", "bad", "okay", "good", "amazing"],
+    },
+
+    // Location and environment
+    location: String, // gym name, home, etc.
+    tags: [String], // custom tags like 'morning', 'fasted', 'new-pr'
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Indexes for better query performance
+workoutSessionSchema.index({ user: 1, createdAt: -1 });
+workoutSessionSchema.index({ user: 1, status: 1 });
+workoutSessionSchema.index({ user: 1, "exercises.exercise": 1 });
+
+// Calculate workout metrics before saving
+workoutSessionSchema.pre("save", function (next) {
+  if (this.exercises && this.exercises.length > 0) {
+    let totalSets = 0;
+    let totalReps = 0;
+    let totalWeight = 0;
+    let totalRpe = 0;
+    let rpeCount = 0;
+
+    this.exercises.forEach((exerciseSet) => {
+      if (exerciseSet.sets && exerciseSet.sets.length > 0) {
+        exerciseSet.sets.forEach((set) => {
+          if (set.completed) {
+            totalSets++;
+            totalReps += set.reps || 0;
+            totalWeight += (set.weight || 0) * (set.reps || 0);
+            if (set.rpe) {
+              totalRpe += set.rpe;
+              rpeCount++;
+            }
+          }
+        });
+
+        // Update exercise-level totals
+        exerciseSet.totalSets = exerciseSet.sets.filter(
+          (set) => set.completed
+        ).length;
+        exerciseSet.totalReps = exerciseSet.sets.reduce(
+          (sum, set) => sum + (set.completed ? set.reps || 0 : 0),
+          0
+        );
+        exerciseSet.maxWeight = Math.max(
+          ...exerciseSet.sets.map((set) =>
+            set.completed ? set.weight || 0 : 0
+          )
+        );
+      }
+    });
+
+    this.totalSets = totalSets;
+    this.totalReps = totalReps;
+    this.totalWeight = totalWeight;
+    this.avgRpe = rpeCount > 0 ? totalRpe / rpeCount : 0;
+  }
+
+  // Calculate duration if completed
+  if (this.status === "completed" && this.startedAt && this.completedAt) {
+    this.duration = Math.round(
+      (this.completedAt - this.startedAt) / (1000 * 60)
+    );
+  }
+
+  next();
+});
+
+const WorkoutSession = mongoose.model("WorkoutSession", workoutSessionSchema);
+export default WorkoutSession;
