@@ -1,5 +1,5 @@
 import asyncHandler from "../middleware/async-handler.js";
-import Workout from "../models/workout-model.js";
+import Workout from "../models/workout-template-model.js";
 
 // @desc Fetch all workouts
 // @route GET /api/workouts

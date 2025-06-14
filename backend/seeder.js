@@ -8,7 +8,7 @@ import exercises from "./data/exercises.js";
 import workouts from "./data/workouts.js";
 import User from "./models/user-model.js";
 import Exercise from "./models/exercise-model.js";
-import Workout from "./models/workout-model.js";
+import Workout from "./models/workout-template-model.js";
 import connectDB from "./config/db.js";
 
 connectDB();
