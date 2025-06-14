@@ -1,0 +1,30 @@
+import express from "express";
+const router = express.Router();
+import {
+  createWorkoutSession,
+  startWorkoutSession,
+  completeWorkoutSession,
+  updateExerciseSet,
+  getUserWorkoutSessions,
+  getWorkoutSessionById,
+  deleteWorkoutSession,
+  getWorkoutStats,
+} from "../controllers/workout-session-controller.js";
+import { protect } from "../middleware/auth-middleware.js";
+
+// All routes are protected
+router.use(protect);
+
+router.route("/").get(getUserWorkoutSessions).post(createWorkoutSession);
+
+router.route("/stats").get(getWorkoutStats);
+
+router.route("/:id").get(getWorkoutSessionById).delete(deleteWorkoutSession);
+
+router.route("/:id/start").put(startWorkoutSession);
+
+router.route("/:id/complete").put(completeWorkoutSession);
+
+router.route("/:id/exercises/:exerciseIndex/sets").put(updateExerciseSet);
+
+export default router;
