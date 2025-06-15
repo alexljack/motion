@@ -18,7 +18,7 @@ const personalRecordSchema = new mongoose.Schema(
       required: true,
     },
     value: { type: Number, required: true },
-    unit: { type: String, default: "lbs" }, // lbs, kg, seconds, etc.
+    unit: { type: String, default: "kg" }, // lbs, kg, seconds, etc.
 
     // Context of the PR
     achievedDate: { type: Date, default: Date.now },
