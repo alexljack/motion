@@ -8,12 +8,12 @@ import PersonalRecord from "../models/personal-record-model.js";
 // @route POST /api/workout-sessions
 // @access Private
 const createWorkoutSession = asyncHandler(async (req, res) => {
-  const { name, basedOnWorkout, exercises } = req.body;
+  const { name, workoutTemplateId, exercises } = req.body;
 
   const workoutSession = await WorkoutSession.create({
     user: req.user._id,
     name,
-    basedOnWorkout,
+    workoutTemplateId,
     exercises: exercises || [],
     status: "planned",
   });
@@ -145,7 +145,7 @@ const getUserWorkoutSessions = asyncHandler(async (req, res) => {
 
   const workoutSessions = await WorkoutSession.find(query)
     .populate("exercises.exercise", "name category mainTargetMuscle")
-    .populate("basedOnWorkout", "name")
+    .populate("workoutTemplateId", "name")
     .sort({ createdAt: -1 })
     .limit(limit * 1)
     .skip((page - 1) * limit);
@@ -167,9 +167,9 @@ const getUserWorkoutSessions = asyncHandler(async (req, res) => {
 // @access Private
 const getWorkoutSessionById = asyncHandler(async (req, res) => {
   const workoutSession = await WorkoutSession.findById(req.params.id)
-    .populate("exercises.exercise", "name category mainTargetMuscle equipment")
-    .populate("basedOnWorkout", "name description")
-    .populate("user", "name email");
+    .populate("exercises.exercise", "name category mainTargetMuscle equipmentNeeded")
+    .populate("workoutTemplateId", "name description")
+    .populate("user", "first_name last_name email");
 
   if (!workoutSession) {
     res.status(404);

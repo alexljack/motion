@@ -1,22 +1,22 @@
 import mongoose from "mongoose";
 
 const templateExerciseSchema = new mongoose.Schema({
-  workout_template_id: {
+  workoutTemplateId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "WorkoutTemplate",
     required: true,
   },
-  exercise_id: {
+  exerciseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Exercise",
     required: true,
   },
-  order_index: { type: Number, required: true },
-  target_sets: Number,
-  target_reps: Number,
-  target_weight: Number,
-  target_duration_seconds: Number,
-  rest_seconds: Number,
+  orderIndex: { type: Number, required: true },
+  targetSets: Number,
+  targetReps: Number,
+  targetWeight: Number,
+  targetDurationSeconds: Number,
+  restSeconds: Number,
   notes: String,
 });
 

@@ -14,7 +14,8 @@ const authUser = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       _id: user._id,
-      name: user.name,
+      first_name: user.first_name,
+      last_name: user.last_name,
       email: user.email,
       isAdmin: user.isAdmin,
     });
@@ -28,21 +29,22 @@ const authUser = asyncHandler(async (req, res) => {
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, height, name, password, weight } = req.body;
+  const { email, height, first_name, last_name, username, password, weight } = req.body;
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400).json({ message: "User already exists" });
     throw new Error("User already exists");
   }
 
-  const user = await User.create({ name, email, password, weight, height });
+  const user = await User.create({ first_name, last_name, username, email, password, weight, height });
 
   if (user) {
     generateToken(res, user._id);
 
     res.status(201).json({
       _id: user._id,
-      name: user.name,
+      first_name: user.first_name,
+      last_name: user.last_name,
       height: user.height,
       email: user.email,
       isAdmin: user.isAdmin,
@@ -70,7 +72,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     res.status(201).json({
       _id: user._id,
-      name: user.name,
+      first_name: user.first_name,
+      last_name: user.last_name,
       height: user.height,
       email: user.email,
       isAdmin: user.isAdmin,
@@ -88,7 +91,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
-    user.name = req.body.name || user.name;
+    user.first_name = req.body.first_name || user.first_name;
+    user.last_name = req.body.last_name || user.last_name;
+    user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
     user.height = req.body.height || user.height;
     user.weight = req.body.weight || user.weight;
@@ -101,7 +106,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       _id: updatedUser._id,
-      name: updatedUser.name,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
       height: updatedUser.height,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,

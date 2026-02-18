@@ -2,19 +2,19 @@ import mongoose from "mongoose";
 
 const workoutTemplateSchema = new mongoose.Schema(
   {
-    user_id: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     name: { type: String, required: true },
     description: String,
-    difficulty_level: {
+    difficultyLevel: {
       type: String,
       enum: ["beginner", "intermediate", "advanced"],
     },
-    estimated_duration_minutes: Number,
-    is_public: { type: Boolean, default: false },
+    estimatedDurationMinutes: Number,
+    isPublic: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
