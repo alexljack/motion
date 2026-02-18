@@ -1,32 +1,52 @@
-# MOTION APP
+# Fort
 
-# Getting Started
+A full-stack gym tracking application built with React, Node.js, Express, and MongoDB.
 
-## Getting Started
+## Prerequisites
 
-1. make a copy of example.env and rename it .env.development
-2. enter your mongodb uri including password
-3. make sure to enter .env\* into your .gitignore file
+- Node.js v23.1.0
+- MongoDB instance (local or Atlas)
 
-node version - v23.1.0
+## Setup
 
-seed database - node backend/seeder
-seed database - npm run data:import
+1. Copy the environment template and rename it:
+   ```bash
+   cp example.env .env.development
+   ```
+2. Open `.env.development` and enter your MongoDB URI and any other required values.
+3. Ensure `.env*` is in your `.gitignore`.
+
+## Install Dependencies
 
 ```bash
-npm run data:import
+# Install root dependencies (backend + concurrently)
+npm install
+
+# Install frontend dependencies
+npm install --prefix frontend
 ```
 
-clear database - npm run data:destroy
+## Database
 
 ```bash
+# Seed the database with sample data
+npm run data:import
+
+# Clear the database
 npm run data:destroy
 ```
 
-to run the app
-
-destroy database - node backend/seeder -d
+## Running the App
 
 ```bash
+# Run both frontend and backend concurrently (development)
 npm run develop
+
+# Run backend only
+npm run server
+
+# Run frontend only
+npm run client
 ```
+
+The backend runs on `http://localhost:8000` and the frontend on `http://localhost:5173` by default.
