@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
 function Homepage() {
   return (
     <PageWrapper pageName="Dashboard">
-      <h3>Welcome Home, Latch!</h3>
+      <h3>Welcome Home!</h3>
       <div className="grid grid-cols-6 grid-rows-6 gap-[5px] w-full h-full p-4">
         <div className="bg-blue-500 col-start-1 col-end-3 row-start-1 row-end-5">
           1

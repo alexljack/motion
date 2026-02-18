@@ -23,7 +23,7 @@ export interface WorkoutSession {
   _id: string;
   user: string;
   name: string;
-  basedOnWorkout?: string;
+  workoutTemplate?: string;
   exercises: WorkoutExercise[];
   startedAt: string;
   completedAt?: string;

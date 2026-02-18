@@ -40,7 +40,7 @@ const workoutSessionSchema = new mongoose.Schema(
     },
     name: { type: String, required: true },
     // Optional reference to a workout template
-    workoutTemplateId: {
+    workoutTemplate: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "WorkoutTemplate",
       required: false,

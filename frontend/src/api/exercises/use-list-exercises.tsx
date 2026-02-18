@@ -7,10 +7,12 @@ type Exercise = {
   description: string;
   difficulty: string;
   duration: number;
-  equipment: string;
+  equipmentNeeded: string[];
   image: string;
   mainTargetMuscle: string;
-  muscleGroup: string[];
+  muscleGroups: string[];
+  isCompound: boolean;
+  instructions?: string;
   name: string;
 };
 

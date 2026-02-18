@@ -35,7 +35,7 @@ const importData = async () => {
     const sampleWorkouts = workouts.map((workout) => {
       return {
         ...workout,
-        userId: adminUser,
+        user: adminUser,
       };
     });
 
@@ -54,8 +54,8 @@ const importData = async () => {
           const exerciseId = exerciseMap[exercise.exerciseName];
           if (exerciseId) {
             templateExercisesList.push({
-              workoutTemplateId: workoutId,
-              exerciseId: exerciseId,
+              workoutTemplate: workoutId,
+              exercise: exerciseId,
               orderIndex: exercise.orderIndex,
               targetSets: exercise.targetSets,
               targetReps: exercise.targetReps,
