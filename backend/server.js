@@ -7,7 +7,6 @@ import { errorHandler, notFound } from "./middleware/error-middleware.js";
 import exerciseRoutes from "./routes/exercise-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import workoutRoutes from "./routes/workout-routes.js";
-import workoutLogRoutes from "./routes/workout-log-routes.js";
 import workoutSessionRoutes from "./routes/workout-session-routes.js";
 import personalRecordRoutes from "./routes/personal-record-routes.js";
 import bodyMeasurementRoutes from "./routes/body-measurement-routes.js";
@@ -36,7 +35,6 @@ app.get("/", (req, res) => {
 app.use("/api/exercises", exerciseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/workouts", workoutRoutes);
-app.use("/api/logs", workoutLogRoutes);
 app.use("/api/workout-sessions", workoutSessionRoutes);
 app.use("/api/personal-records", personalRecordRoutes);
 app.use("/api/body-measurements", bodyMeasurementRoutes);

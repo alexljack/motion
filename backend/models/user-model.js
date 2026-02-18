@@ -1,14 +1,23 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-// import bcrypt from "bcryptjs/dist/bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    first_name: {
       type: String,
       required: true,
     },
+    last_name: {
+      type: String,
+      required: true,
+    },
+    date_of_birth: Date,
     email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    username: {
       type: String,
       required: true,
       unique: true,
@@ -17,25 +26,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+    },
     isAdmin: {
       type: Boolean,
       required: true,
       default: false,
     },
-    height: {
-      type: Number,
-      required: true,
-    },
-    weight: {
-      type: Number,
-      required: true,
-    },
-    goals: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Goal",
-      },
-    ],
+    height: Number,
+    weight: Number,
   },
   {
     timestamps: true,

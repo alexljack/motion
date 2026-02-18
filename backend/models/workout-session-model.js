@@ -1,6 +1,35 @@
-// backend/models/workout-session-model.js
 import mongoose from "mongoose";
-import exerciseSetSchema from "./exercise-set-model";
+
+// Embedded schema for individual sets within an exercise
+const setSchema = new mongoose.Schema({
+  setNumber: { type: Number, required: true },
+  reps: { type: Number, default: 0 },
+  weight: { type: Number, default: 0 }, // in lbs or kg
+  durationInSeconds: { type: Number, default: 0 }, // for time-based exercises
+  distance: { type: Number, default: 0 }, // for cardio exercises
+  rpe: { type: Number, min: 1, max: 10 }, // Rate of Perceived Exertion
+  restTime: { type: Number, default: 0 }, // rest time in seconds
+  completed: { type: Boolean, default: false },
+  notes: String,
+});
+
+// Embedded schema for exercises in a workout session
+const exerciseSetSchema = new mongoose.Schema({
+  exercise: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Exercise",
+    required: true,
+  },
+  sets: [setSchema],
+  // Calculated fields (populated by pre-save hook)
+  totalSets: { type: Number, default: 0 },
+  totalReps: { type: Number, default: 0 },
+  maxWeight: { type: Number, default: 0 },
+  // For cardio exercises
+  duration: Number, // in minutes
+  distance: Number, // in kilometers or miles
+  notes: String,
+});
 
 const workoutSessionSchema = new mongoose.Schema(
   {
@@ -11,9 +40,9 @@ const workoutSessionSchema = new mongoose.Schema(
     },
     name: { type: String, required: true },
     // Optional reference to a workout template
-    basedOnWorkout: {
+    workoutTemplateId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Workout",
+      ref: "WorkoutTemplate",
       required: false,
     },
     exercises: [exerciseSetSchema],
