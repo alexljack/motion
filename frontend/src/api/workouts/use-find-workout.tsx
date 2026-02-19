@@ -7,7 +7,7 @@ type UseFindWorkoutOptions = Omit<
   "queryKey" | "queryFn"
 >;
 
-const useFindWorkout = (id: string, options: UseFindWorkoutOptions) => {
+const useFindWorkout = (id: string, options?: UseFindWorkoutOptions) => {
   const { ...restOptions } = options || {};
   return useQuery<Workout, Error, Workout>({
     queryKey: ["find-workout", id],

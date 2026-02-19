@@ -3,7 +3,8 @@ import axios from "axios";
 
 type RegisterResponse = {
   _id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   isAdmin: boolean;
   height: number;
@@ -12,7 +13,9 @@ type RegisterResponse = {
 
 type RegisterCredentials = {
   email: string;
-  name: string;
+  first_name: string;
+  last_name: string;
+  username: string;
   password: string;
   weight: number;
   height: number;

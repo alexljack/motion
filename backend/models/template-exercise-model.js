@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const templateExerciseSchema = new mongoose.Schema({
-  workoutTemplateId: {
+  workoutTemplate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "WorkoutTemplate",
     required: true,
   },
-  exerciseId: {
+  exercise: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Exercise",
     required: true,

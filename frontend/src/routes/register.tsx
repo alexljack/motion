@@ -10,7 +10,9 @@ export const Route = createFileRoute("/register")({
 type FormData = {
   email: string;
   height: number;
-  name: string;
+  first_name: string;
+  last_name: string;
+  username: string;
   weight: number;
   password: string;
 };
@@ -50,11 +52,27 @@ function RouteComponent() {
               />
             </label>
             <label>
-              Name
+              First Name
               <input
                 disabled={isPending}
                 placeholder="name"
-                {...methods.register("name")}
+                {...methods.register("first_name")}
+              />
+            </label>
+            <label>
+              Last Name
+              <input
+                disabled={isPending}
+                placeholder="name"
+                {...methods.register("last_name")}
+              />
+            </label>
+            <label>
+              Username
+              <input
+                disabled={isPending}
+                placeholder="name"
+                {...methods.register("username")}
               />
             </label>
             <label>

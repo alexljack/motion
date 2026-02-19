@@ -31,7 +31,7 @@ function ExerciseView() {
         <p>{data?.category}</p>
         <p>{data?.difficulty}</p>
         <p>{data?.description}</p>
-        <p>{data?.equipment}</p>
+        <p>{data?.equipmentNeeded}</p>
       </div>
     </PageWrapper>
   );

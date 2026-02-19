@@ -1,39 +1,24 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
+import { WorkoutSession } from "../workout-types";
 
-export type ExerciseSet = {
-  exercise: string; // exercise ID
-  sets: number;
-  reps: number;
-  weight: number;
-};
-
-export type WorkoutLogInput = {
-  workout?: string; // Optional workout ID
-  exercises: ExerciseSet[];
-  notes?: string;
-};
-
-export type WorkoutLogResponse = {
-  _id: string;
-  user: string;
-  workout?: string;
-  date: string;
-  exercises: ExerciseSet[];
-  notes?: string;
+export type WorkoutSessionInput = {
+  name: string;
+  workoutTemplate?: string;
+  exercises?: unknown[];
 };
 
 const useLogWorkout = (
   options?: UseMutationOptions<
-    WorkoutLogResponse,
+    WorkoutSession,
     Error,
-    WorkoutLogInput,
+    WorkoutSessionInput,
     unknown
   >
 ) => {
   return useMutation({
     mutationFn: async (formData) => {
-      const res = await axios.post("/api/logs/", formData);
+      const res = await axios.post("/api/workout-sessions", formData);
       return res.data;
     },
     ...options,
@@ -41,21 +26,3 @@ const useLogWorkout = (
 };
 
 export default useLogWorkout;
-
-// const logWorkoutMutation = useMutation({
-// mutationFn: async () => {
-//     const response = await axios.post("/api/logs", {
-//     id,
-//     date,
-//     exercises,
-//     totalDuration,
-//     notes,
-//     rating,
-//     feelingScore,
-//     });
-//     return response.data;
-// },
-// onSuccess: () => {
-//     navigate({ to: "/logs" });
-// },
-// });

@@ -3,7 +3,8 @@ import axios from "axios";
 
 type AuthResponse = {
   _id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   isAdmin: boolean;
 };
