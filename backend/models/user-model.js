@@ -51,8 +51,17 @@ const userSchema = new mongoose.Schema(
       },
       language: {
         type: String,
-        enum: ["en", "es", "pt", "fr", "de", "it"],
-        default: "en",
+        enum: [
+          "en-GB",
+          "en-US",
+          "es-ES",
+          "fr-FR",
+          "de-DE",
+          "it-IT",
+          "nl-NL",
+          "pt-PT",
+        ],
+        default: "en-GB",
       },
       week_starts_on: {
         type: String,
