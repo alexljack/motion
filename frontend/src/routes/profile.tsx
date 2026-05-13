@@ -7,9 +7,8 @@ export const Route = createFileRoute("/profile")({
 });
 
 function RouteComponent() {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  //   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const { data } = useUserProfile();
-  console.log("user", user);
 
   return (
     <PageWrapper pageName="Your Profile">
