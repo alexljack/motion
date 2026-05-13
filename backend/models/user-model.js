@@ -37,10 +37,50 @@ const userSchema = new mongoose.Schema(
     },
     height: Number,
     weight: Number,
+    reset_password_token: String,
+    reset_password_expires: Date,
+    preferences: {
+      units: { type: String, enum: ["kg", "lbs"], default: "kg" },
+      measurement_system: {
+        type: String,
+        enum: ["metric", "imperial"],
+        default: "metric",
+      },
+      theme: {
+        type: String,
+        enum: ["light", "dark", "system"],
+        default: "system",
+      },
+      language: {
+        type: String,
+        enum: [
+          "en-GB",
+          "en-US",
+          "es-ES",
+          "fr-FR",
+          "de-DE",
+          "it-IT",
+          "nl-NL",
+          "pt-PT",
+        ],
+        default: "en-GB",
+      },
+      week_starts_on: {
+        type: String,
+        enum: ["monday", "sunday"],
+        default: "monday",
+      },
+      height_unit: { type: String, enum: ["cm", "ft_in"], default: "cm" },
+      orm_formula: {
+        type: String,
+        enum: ["epley", "brzycki"],
+        default: "epley",
+      },
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
