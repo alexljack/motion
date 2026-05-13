@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import useLogout from "../../api/authentication/use-logout";
 
@@ -25,7 +25,9 @@ const TopBar = () => {
       <div className="w-full flex justify-end gap-2">
         <div>Notifications</div>
         <div>Language</div>
-        <div>Avatar</div>
+        <Link to={"/profile"}>
+          <div>Avatar</div>
+        </Link>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-# Fort
+# Motion
 
 A full-stack gym tracking application built with React, Node.js, Express, and MongoDB.
 
