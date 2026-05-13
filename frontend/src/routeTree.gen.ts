@@ -19,7 +19,8 @@ import { Route as WorkoutsIndexImport } from './routes/workouts/index'
 import { Route as LogsIndexImport } from './routes/logs/index'
 import { Route as ExercisesIndexImport } from './routes/exercises/index'
 import { Route as WorkoutsIdImport } from './routes/workouts/$id'
-import { Route as LogsNewImport } from './routes/logs/$new'
+import { Route as LogsNewImport } from './routes/logs/new'
+import { Route as LogsIdImport } from './routes/logs/$id'
 import { Route as ExercisesIdImport } from './routes/exercises/$id'
 
 // Create/Update Routes
@@ -73,8 +74,14 @@ const WorkoutsIdRoute = WorkoutsIdImport.update({
 } as any)
 
 const LogsNewRoute = LogsNewImport.update({
-  id: '/logs/$new',
-  path: '/logs/$new',
+  id: '/logs/new',
+  path: '/logs/new',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LogsIdRoute = LogsIdImport.update({
+  id: '/logs/$id',
+  path: '/logs/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -123,10 +130,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExercisesIdImport
       parentRoute: typeof rootRoute
     }
-    '/logs/$new': {
-      id: '/logs/$new'
-      path: '/logs/$new'
-      fullPath: '/logs/$new'
+    '/logs/$id': {
+      id: '/logs/$id'
+      path: '/logs/$id'
+      fullPath: '/logs/$id'
+      preLoaderRoute: typeof LogsIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/logs/new': {
+      id: '/logs/new'
+      path: '/logs/new'
+      fullPath: '/logs/new'
       preLoaderRoute: typeof LogsNewImport
       parentRoute: typeof rootRoute
     }
@@ -169,7 +183,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$new': typeof LogsNewRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
   '/logs': typeof LogsIndexRoute
@@ -182,7 +197,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$new': typeof LogsNewRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
   '/logs': typeof LogsIndexRoute
@@ -196,7 +212,8 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$new': typeof LogsNewRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises/': typeof ExercisesIndexRoute
   '/logs/': typeof LogsIndexRoute
@@ -211,7 +228,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$new'
+    | '/logs/$id'
+    | '/logs/new'
     | '/workouts/$id'
     | '/exercises'
     | '/logs'
@@ -223,7 +241,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$new'
+    | '/logs/$id'
+    | '/logs/new'
     | '/workouts/$id'
     | '/exercises'
     | '/logs'
@@ -235,7 +254,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$new'
+    | '/logs/$id'
+    | '/logs/new'
     | '/workouts/$id'
     | '/exercises/'
     | '/logs/'
@@ -249,6 +269,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   RegisterRoute: typeof RegisterRoute
   ExercisesIdRoute: typeof ExercisesIdRoute
+  LogsIdRoute: typeof LogsIdRoute
   LogsNewRoute: typeof LogsNewRoute
   WorkoutsIdRoute: typeof WorkoutsIdRoute
   ExercisesIndexRoute: typeof ExercisesIndexRoute
@@ -262,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   RegisterRoute: RegisterRoute,
   ExercisesIdRoute: ExercisesIdRoute,
+  LogsIdRoute: LogsIdRoute,
   LogsNewRoute: LogsNewRoute,
   WorkoutsIdRoute: WorkoutsIdRoute,
   ExercisesIndexRoute: ExercisesIndexRoute,
@@ -284,7 +306,8 @@ export const routeTree = rootRoute
         "/auth",
         "/register",
         "/exercises/$id",
-        "/logs/$new",
+        "/logs/$id",
+        "/logs/new",
         "/workouts/$id",
         "/exercises/",
         "/logs/",
@@ -306,8 +329,11 @@ export const routeTree = rootRoute
     "/exercises/$id": {
       "filePath": "exercises/$id.tsx"
     },
-    "/logs/$new": {
-      "filePath": "logs/$new.tsx"
+    "/logs/$id": {
+      "filePath": "logs/$id.tsx"
+    },
+    "/logs/new": {
+      "filePath": "logs/new.tsx"
     },
     "/workouts/$id": {
       "filePath": "workouts/$id.tsx"

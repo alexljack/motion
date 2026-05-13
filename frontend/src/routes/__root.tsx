@@ -10,7 +10,7 @@ export const Route = createRootRoute({
       <hr />
       <div className="h-dvh w-full">
         <TopBar />
-        <div className="h-[calc(100dvh-48px)] outline bg-gray-200 py-6 px-4">
+        <div className="h-[calc(100dvh-48px)] outline bg-gray-200 py-6 px-4 overflow-scroll">
           <Outlet />
         </div>
       </div>

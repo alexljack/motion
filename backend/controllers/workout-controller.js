@@ -7,7 +7,21 @@ import TemplateExercise from "../models/template-exercise-model.js";
 // @access Public
 const getWorkouts = asyncHandler(async (req, res) => {
   const workouts = await Workout.find({});
-  res.json(workouts);
+
+  const exercises = await TemplateExercise.find({
+    workoutTemplate: { $in: workouts.map((w) => w._id) },
+  })
+    .populate("exercise", "name category mainTargetMuscle")
+    .sort({ orderIndex: 1 });
+
+  const workoutsWithExercises = workouts.map((workout) => ({
+    ...workout.toObject(),
+    exercises: exercises.filter(
+      (ex) => ex.workoutTemplate.toString() === workout._id.toString()
+    ),
+  }));
+
+  res.json(workoutsWithExercises);
 });
 
 // @desc Fetch a workout with its exercises

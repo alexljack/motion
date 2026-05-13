@@ -10,12 +10,20 @@ export interface ExerciseSet {
   notes?: string;
 }
 
+export interface PopulatedExercise {
+  _id: string;
+  name: string;
+  category: string;
+  mainTargetMuscle: string;
+}
+
 export interface WorkoutExercise {
-  exercise: string; // Exercise ID
+  _id?: string;
+  exercise: string | PopulatedExercise; // Exercise ID or populated object
   sets: ExerciseSet[];
-  totalSets: number;
-  totalReps: number;
-  maxWeight: number;
+  totalSets?: number;
+  totalReps?: number;
+  maxWeight?: number;
   notes?: string;
 }
 
