@@ -142,8 +142,30 @@ const getUserById = asyncHandler(async (req, res) => {
   res.send("get user by id");
 });
 
+// @desc Get user preferences
+// @route GET /api/users/preferences
+// @access Private
 const getUserPreferences = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  res.status(200).json(user.preferences);
+});
+
+// @desc Update user preferences
+// @route PATCH /api/users/preferences
+// @access Private
+const updateUserPreferences = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  Object.assign(user.preferences, req.body);
+  const updatedUser = await user.save();
+  res.status(200).json(updatedUser.preferences);
 });
 
 // @desc Delete a user
@@ -170,4 +192,6 @@ export {
   getUsers,
   deleteUser,
   updateUser,
+  getUserPreferences,
+  updateUserPreferences,
 };

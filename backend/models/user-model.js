@@ -37,6 +37,8 @@ const userSchema = new mongoose.Schema(
     },
     height: Number,
     weight: Number,
+    reset_password_token: String,
+    reset_password_expires: Date,
     preferences: {
       units: { type: String, enum: ["kg", "lbs"], default: "kg" },
       measurement_system: {
