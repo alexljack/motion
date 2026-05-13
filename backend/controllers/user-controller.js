@@ -29,14 +29,23 @@ const authUser = asyncHandler(async (req, res) => {
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, height, first_name, last_name, username, password, weight } = req.body;
+  const { email, height, first_name, last_name, username, password, weight } =
+    req.body;
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400).json({ message: "User already exists" });
     throw new Error("User already exists");
   }
 
-  const user = await User.create({ first_name, last_name, username, email, password, weight, height });
+  const user = await User.create({
+    first_name,
+    last_name,
+    username,
+    email,
+    password,
+    weight,
+    height,
+  });
 
   if (user) {
     generateToken(res, user._id);
@@ -131,6 +140,10 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
   res.send("get user by id");
+});
+
+const getUserPreferences = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
 });
 
 // @desc Delete a user
