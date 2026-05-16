@@ -12,7 +12,12 @@ function RouteComponent() {
 
   return (
     <PageWrapper pageName="Your Profile">
-      <div>Hello {data?.first_name}!</div>
+      <div className="flex flex-col gap-2">
+        <p>Hello {data?.first_name}!</p>
+        <input value={data?.height} />
+        <input value={data?.weight} />
+        <input value={data?.preferences.units} />
+      </div>
     </PageWrapper>
   );
 }

@@ -1,11 +1,16 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 
+import { Preferences } from "../types/settings";
+
 type UserData = {
   email: string;
   first_name: string;
+  height: number;
+  weight: number;
   isAdmin: boolean;
   last_name: string;
+  preferences: Preferences;
   _id: string;
 };
 
