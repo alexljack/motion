@@ -16,6 +16,8 @@ const Sidebar = () => {
     { to: "/exercises", label: "Exercises" },
     { to: "/workouts", label: "Workouts" },
     { to: "/logs", label: "Logs" },
+    { to: "/sleep", label: "Sleep" },
+    { to: "/nutrition", label: "Nutrition" },
     { to: "/about", label: "About" },
   ];
 
