@@ -14,11 +14,11 @@ const useUpdateUserPreferences = (
       const response = await axios.patch("/api/users/preferences", data);
       return response.data as Preferences;
     },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      options?.onSuccess?.(data, variables, context);
-    },
     ...options,
+    onSuccess: (data, variables, context, mutation) => {
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      options?.onSuccess?.(data, variables, context, mutation);
+    },
   });
 };
 

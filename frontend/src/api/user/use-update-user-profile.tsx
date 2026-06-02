@@ -20,11 +20,11 @@ const useUpdateUserProfile = (
       const response = await axios.put("/api/users/profile", data);
       return response.data as UserData;
     },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      options?.onSuccess?.(data, variables, context);
-    },
     ...options,
+    onSuccess: (data, variables, context, mutation) => {
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      options?.onSuccess?.(data, variables, context, mutation);
+    },
   });
 };
 
