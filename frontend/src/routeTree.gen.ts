@@ -17,11 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
 import { Route as SleepIndexRouteImport } from './routes/sleep/index'
 import { Route as NutritionIndexRouteImport } from './routes/nutrition/index'
-import { Route as LogsIndexRouteImport } from './routes/logs/index'
+import { Route as MyLogsIndexRouteImport } from './routes/my-logs/index'
 import { Route as ExercisesIndexRouteImport } from './routes/exercises/index'
 import { Route as WorkoutsIdRouteImport } from './routes/workouts/$id'
-import { Route as LogsNewRouteImport } from './routes/logs/new'
-import { Route as LogsIdRouteImport } from './routes/logs/$id'
+import { Route as MyLogsNewRouteImport } from './routes/my-logs/new'
+import { Route as MyLogsIdRouteImport } from './routes/my-logs/$id'
 import { Route as ExercisesIdRouteImport } from './routes/exercises/$id'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -64,9 +64,9 @@ const NutritionIndexRoute = NutritionIndexRouteImport.update({
   path: '/nutrition/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LogsIndexRoute = LogsIndexRouteImport.update({
-  id: '/logs/',
-  path: '/logs/',
+const MyLogsIndexRoute = MyLogsIndexRouteImport.update({
+  id: '/my-logs/',
+  path: '/my-logs/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExercisesIndexRoute = ExercisesIndexRouteImport.update({
@@ -79,14 +79,14 @@ const WorkoutsIdRoute = WorkoutsIdRouteImport.update({
   path: '/workouts/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LogsNewRoute = LogsNewRouteImport.update({
-  id: '/logs/new',
-  path: '/logs/new',
+const MyLogsNewRoute = MyLogsNewRouteImport.update({
+  id: '/my-logs/new',
+  path: '/my-logs/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LogsIdRoute = LogsIdRouteImport.update({
-  id: '/logs/$id',
-  path: '/logs/$id',
+const MyLogsIdRoute = MyLogsIdRouteImport.update({
+  id: '/my-logs/$id',
+  path: '/my-logs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExercisesIdRoute = ExercisesIdRouteImport.update({
@@ -102,11 +102,11 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$id': typeof LogsIdRoute
-  '/logs/new': typeof LogsNewRoute
+  '/my-logs/$id': typeof MyLogsIdRoute
+  '/my-logs/new': typeof MyLogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises/': typeof ExercisesIndexRoute
-  '/logs/': typeof LogsIndexRoute
+  '/my-logs/': typeof MyLogsIndexRoute
   '/nutrition/': typeof NutritionIndexRoute
   '/sleep/': typeof SleepIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
@@ -118,11 +118,11 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$id': typeof LogsIdRoute
-  '/logs/new': typeof LogsNewRoute
+  '/my-logs/$id': typeof MyLogsIdRoute
+  '/my-logs/new': typeof MyLogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises': typeof ExercisesIndexRoute
-  '/logs': typeof LogsIndexRoute
+  '/my-logs': typeof MyLogsIndexRoute
   '/nutrition': typeof NutritionIndexRoute
   '/sleep': typeof SleepIndexRoute
   '/workouts': typeof WorkoutsIndexRoute
@@ -135,11 +135,11 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/exercises/$id': typeof ExercisesIdRoute
-  '/logs/$id': typeof LogsIdRoute
-  '/logs/new': typeof LogsNewRoute
+  '/my-logs/$id': typeof MyLogsIdRoute
+  '/my-logs/new': typeof MyLogsNewRoute
   '/workouts/$id': typeof WorkoutsIdRoute
   '/exercises/': typeof ExercisesIndexRoute
-  '/logs/': typeof LogsIndexRoute
+  '/my-logs/': typeof MyLogsIndexRoute
   '/nutrition/': typeof NutritionIndexRoute
   '/sleep/': typeof SleepIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
@@ -153,11 +153,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$id'
-    | '/logs/new'
+    | '/my-logs/$id'
+    | '/my-logs/new'
     | '/workouts/$id'
     | '/exercises/'
-    | '/logs/'
+    | '/my-logs/'
     | '/nutrition/'
     | '/sleep/'
     | '/workouts/'
@@ -169,11 +169,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$id'
-    | '/logs/new'
+    | '/my-logs/$id'
+    | '/my-logs/new'
     | '/workouts/$id'
     | '/exercises'
-    | '/logs'
+    | '/my-logs'
     | '/nutrition'
     | '/sleep'
     | '/workouts'
@@ -185,11 +185,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/exercises/$id'
-    | '/logs/$id'
-    | '/logs/new'
+    | '/my-logs/$id'
+    | '/my-logs/new'
     | '/workouts/$id'
     | '/exercises/'
-    | '/logs/'
+    | '/my-logs/'
     | '/nutrition/'
     | '/sleep/'
     | '/workouts/'
@@ -202,11 +202,11 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   ExercisesIdRoute: typeof ExercisesIdRoute
-  LogsIdRoute: typeof LogsIdRoute
-  LogsNewRoute: typeof LogsNewRoute
+  MyLogsIdRoute: typeof MyLogsIdRoute
+  MyLogsNewRoute: typeof MyLogsNewRoute
   WorkoutsIdRoute: typeof WorkoutsIdRoute
   ExercisesIndexRoute: typeof ExercisesIndexRoute
-  LogsIndexRoute: typeof LogsIndexRoute
+  MyLogsIndexRoute: typeof MyLogsIndexRoute
   NutritionIndexRoute: typeof NutritionIndexRoute
   SleepIndexRoute: typeof SleepIndexRoute
   WorkoutsIndexRoute: typeof WorkoutsIndexRoute
@@ -270,11 +270,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NutritionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/logs/': {
-      id: '/logs/'
-      path: '/logs'
-      fullPath: '/logs/'
-      preLoaderRoute: typeof LogsIndexRouteImport
+    '/my-logs/': {
+      id: '/my-logs/'
+      path: '/my-logs'
+      fullPath: '/my-logs/'
+      preLoaderRoute: typeof MyLogsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exercises/': {
@@ -291,18 +291,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkoutsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/logs/new': {
-      id: '/logs/new'
-      path: '/logs/new'
-      fullPath: '/logs/new'
-      preLoaderRoute: typeof LogsNewRouteImport
+    '/my-logs/new': {
+      id: '/my-logs/new'
+      path: '/my-logs/new'
+      fullPath: '/my-logs/new'
+      preLoaderRoute: typeof MyLogsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/logs/$id': {
-      id: '/logs/$id'
-      path: '/logs/$id'
-      fullPath: '/logs/$id'
-      preLoaderRoute: typeof LogsIdRouteImport
+    '/my-logs/$id': {
+      id: '/my-logs/$id'
+      path: '/my-logs/$id'
+      fullPath: '/my-logs/$id'
+      preLoaderRoute: typeof MyLogsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exercises/$id': {
@@ -322,11 +322,11 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   ExercisesIdRoute: ExercisesIdRoute,
-  LogsIdRoute: LogsIdRoute,
-  LogsNewRoute: LogsNewRoute,
+  MyLogsIdRoute: MyLogsIdRoute,
+  MyLogsNewRoute: MyLogsNewRoute,
   WorkoutsIdRoute: WorkoutsIdRoute,
   ExercisesIndexRoute: ExercisesIndexRoute,
-  LogsIndexRoute: LogsIndexRoute,
+  MyLogsIndexRoute: MyLogsIndexRoute,
   NutritionIndexRoute: NutritionIndexRoute,
   SleepIndexRoute: SleepIndexRoute,
   WorkoutsIndexRoute: WorkoutsIndexRoute,
