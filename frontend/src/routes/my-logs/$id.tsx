@@ -115,7 +115,7 @@ function ActiveLog() {
       feeling: finishData.feeling,
       notes: finishData.notes || undefined,
     });
-    navigate({ to: "/logs" });
+    navigate({ to: "/my-logs" });
   }
 
   if (error) {

@@ -102,7 +102,7 @@ function NewLog() {
     });
 
     await startSession.mutateAsync(session._id);
-    navigate({ to: "/logs/$id", params: { id: session._id } });
+    navigate({ to: "/my-logs/$id", params: { id: session._id } });
   }
 
   const isSubmitting = createSession.isPending || startSession.isPending;
