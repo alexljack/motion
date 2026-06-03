@@ -3,7 +3,8 @@
     "target": "es2023",
     "lib": ["es2023", "dom"],
     "module": "esnext",
-    "strict": true
+    "strict": true,
+    "noUnusedLocals": false
   },
   "files": [],
   "references": [

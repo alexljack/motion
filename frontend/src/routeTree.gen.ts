@@ -8,109 +8,329 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
+import { Route as SleepIndexRouteImport } from './routes/sleep/index'
+import { Route as NutritionIndexRouteImport } from './routes/nutrition/index'
+import { Route as LogsIndexRouteImport } from './routes/logs/index'
+import { Route as ExercisesIndexRouteImport } from './routes/exercises/index'
+import { Route as WorkoutsIdRouteImport } from './routes/workouts/$id'
+import { Route as LogsNewRouteImport } from './routes/logs/new'
+import { Route as LogsIdRouteImport } from './routes/logs/$id'
+import { Route as ExercisesIdRouteImport } from './routes/exercises/$id'
 
-// Import Routes
-
-import { Route as rootRoute } from './routes/__root'
-
-// Create Virtual Routes
-
-const AboutLazyImport = createFileRoute('/about')()
-const IndexLazyImport = createFileRoute('/')()
-
-// Create/Update Routes
-
-const AboutLazyRoute = AboutLazyImport.update({
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const IndexLazyRoute = IndexLazyImport.update({
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutsIndexRoute = WorkoutsIndexRouteImport.update({
+  id: '/workouts/',
+  path: '/workouts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SleepIndexRoute = SleepIndexRouteImport.update({
+  id: '/sleep/',
+  path: '/sleep/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NutritionIndexRoute = NutritionIndexRouteImport.update({
+  id: '/nutrition/',
+  path: '/nutrition/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogsIndexRoute = LogsIndexRouteImport.update({
+  id: '/logs/',
+  path: '/logs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExercisesIndexRoute = ExercisesIndexRouteImport.update({
+  id: '/exercises/',
+  path: '/exercises/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutsIdRoute = WorkoutsIdRouteImport.update({
+  id: '/workouts/$id',
+  path: '/workouts/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogsNewRoute = LogsNewRouteImport.update({
+  id: '/logs/new',
+  path: '/logs/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogsIdRoute = LogsIdRouteImport.update({
+  id: '/logs/$id',
+  path: '/logs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExercisesIdRoute = ExercisesIdRouteImport.update({
+  id: '/exercises/$id',
+  path: '/exercises/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/exercises/$id': typeof ExercisesIdRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
+  '/workouts/$id': typeof WorkoutsIdRoute
+  '/exercises/': typeof ExercisesIndexRoute
+  '/logs/': typeof LogsIndexRoute
+  '/nutrition/': typeof NutritionIndexRoute
+  '/sleep/': typeof SleepIndexRoute
+  '/workouts/': typeof WorkoutsIndexRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/exercises/$id': typeof ExercisesIdRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
+  '/workouts/$id': typeof WorkoutsIdRoute
+  '/exercises': typeof ExercisesIndexRoute
+  '/logs': typeof LogsIndexRoute
+  '/nutrition': typeof NutritionIndexRoute
+  '/sleep': typeof SleepIndexRoute
+  '/workouts': typeof WorkoutsIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/exercises/$id': typeof ExercisesIdRoute
+  '/logs/$id': typeof LogsIdRoute
+  '/logs/new': typeof LogsNewRoute
+  '/workouts/$id': typeof WorkoutsIdRoute
+  '/exercises/': typeof ExercisesIndexRoute
+  '/logs/': typeof LogsIndexRoute
+  '/nutrition/': typeof NutritionIndexRoute
+  '/sleep/': typeof SleepIndexRoute
+  '/workouts/': typeof WorkoutsIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/profile'
+    | '/register'
+    | '/exercises/$id'
+    | '/logs/$id'
+    | '/logs/new'
+    | '/workouts/$id'
+    | '/exercises/'
+    | '/logs/'
+    | '/nutrition/'
+    | '/sleep/'
+    | '/workouts/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/profile'
+    | '/register'
+    | '/exercises/$id'
+    | '/logs/$id'
+    | '/logs/new'
+    | '/workouts/$id'
+    | '/exercises'
+    | '/logs'
+    | '/nutrition'
+    | '/sleep'
+    | '/workouts'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/profile'
+    | '/register'
+    | '/exercises/$id'
+    | '/logs/$id'
+    | '/logs/new'
+    | '/workouts/$id'
+    | '/exercises/'
+    | '/logs/'
+    | '/nutrition/'
+    | '/sleep/'
+    | '/workouts/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
+  ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
+  ExercisesIdRoute: typeof ExercisesIdRoute
+  LogsIdRoute: typeof LogsIdRoute
+  LogsNewRoute: typeof LogsNewRoute
+  WorkoutsIdRoute: typeof WorkoutsIdRoute
+  ExercisesIndexRoute: typeof ExercisesIndexRoute
+  LogsIndexRoute: typeof LogsIndexRoute
+  NutritionIndexRoute: typeof NutritionIndexRoute
+  SleepIndexRoute: typeof SleepIndexRoute
+  WorkoutsIndexRoute: typeof WorkoutsIndexRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workouts/': {
+      id: '/workouts/'
+      path: '/workouts'
+      fullPath: '/workouts/'
+      preLoaderRoute: typeof WorkoutsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sleep/': {
+      id: '/sleep/'
+      path: '/sleep'
+      fullPath: '/sleep/'
+      preLoaderRoute: typeof SleepIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nutrition/': {
+      id: '/nutrition/'
+      path: '/nutrition'
+      fullPath: '/nutrition/'
+      preLoaderRoute: typeof NutritionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logs/': {
+      id: '/logs/'
+      path: '/logs'
+      fullPath: '/logs/'
+      preLoaderRoute: typeof LogsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exercises/': {
+      id: '/exercises/'
+      path: '/exercises'
+      fullPath: '/exercises/'
+      preLoaderRoute: typeof ExercisesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workouts/$id': {
+      id: '/workouts/$id'
+      path: '/workouts/$id'
+      fullPath: '/workouts/$id'
+      preLoaderRoute: typeof WorkoutsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logs/new': {
+      id: '/logs/new'
+      path: '/logs/new'
+      fullPath: '/logs/new'
+      preLoaderRoute: typeof LogsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logs/$id': {
+      id: '/logs/$id'
+      path: '/logs/$id'
+      fullPath: '/logs/$id'
+      preLoaderRoute: typeof LogsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exercises/$id': {
+      id: '/exercises/$id'
+      path: '/exercises/$id'
+      fullPath: '/exercises/$id'
+      preLoaderRoute: typeof ExercisesIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-// Create and export the route tree
-
-export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  AboutLazyRoute: typeof AboutLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
-  AboutLazyRoute: AboutLazyRoute,
+  IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
+  ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
+  ExercisesIdRoute: ExercisesIdRoute,
+  LogsIdRoute: LogsIdRoute,
+  LogsNewRoute: LogsNewRoute,
+  WorkoutsIdRoute: WorkoutsIdRoute,
+  ExercisesIndexRoute: ExercisesIndexRoute,
+  LogsIndexRoute: LogsIndexRoute,
+  NutritionIndexRoute: NutritionIndexRoute,
+  SleepIndexRoute: SleepIndexRoute,
+  WorkoutsIndexRoute: WorkoutsIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/about"
-      ]
-    },
-    "/": {
-      "filePath": "index.lazy.tsx"
-    },
-    "/about": {
-      "filePath": "about.lazy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
