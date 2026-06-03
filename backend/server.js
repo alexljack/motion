@@ -42,17 +42,10 @@ app.use("/api/body-measurements", bodyMeasurementRoutes);
 app.use("/api/goals", fitnessGoalRoutes);
 app.use("/api/sleep-logs", sleepLogRoutes);
 app.use("/api/nutrition-logs", nutritionLogRoutes);
-app.get("/ip", async (req, res) => {
-  const response = await fetch("https://api.ipify.org?format=json");
-
-  const data = await response.json();
-
-  res.json(data);
-});
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  app.get("*splat", (req, res) =>
+  app.use((req, res) =>
     res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html")),
   );
 } else {
