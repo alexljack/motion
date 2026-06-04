@@ -39,6 +39,24 @@ function ActiveLog() {
     notes: "",
   });
 
+  // Pending edits buffered locally until the check button is clicked
+  const [pendingEdits, setPendingEdits] = useState<
+    Record<string, { reps?: number; weight?: number; durationInSeconds?: number }>
+  >({});
+
+  function setPendingField(
+    exerciseIndex: number,
+    setNumber: number,
+    field: "reps" | "weight" | "durationInSeconds",
+    value: number,
+  ) {
+    const key = `${exerciseIndex}-${setNumber}`;
+    setPendingEdits((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], [field]: value },
+    }));
+  }
+
   async function handleAddSet(exerciseIndex: number) {
     const exercise = session?.exercises[exerciseIndex];
     if (!exercise) return;
@@ -63,30 +81,6 @@ function ActiveLog() {
     });
   }
 
-  async function handleUpdateSet(
-    exerciseIndex: number,
-    setNumber: number,
-    field: "reps" | "weight" | "durationInSeconds",
-    value: number,
-  ) {
-    const exercise = session?.exercises[exerciseIndex];
-    const set = exercise?.sets?.find((s) => s.setNumber === setNumber);
-    if (!set) return;
-
-    await updateSet.mutateAsync({
-      sessionId,
-      exerciseIndex,
-      setData: {
-        setNumber,
-        reps: field === "reps" ? value : set.reps,
-        weight: field === "weight" ? value : set.weight,
-        durationInSeconds:
-          field === "durationInSeconds" ? value : set.duration || 0,
-        completed: set.completed,
-      },
-    });
-  }
-
   async function handleToggleCompleted(
     exerciseIndex: number,
     setNumber: number,
@@ -95,16 +89,25 @@ function ActiveLog() {
     const set = exercise?.sets?.find((s) => s.setNumber === setNumber);
     if (!set) return;
 
+    const key = `${exerciseIndex}-${setNumber}`;
+    const edits = pendingEdits[key] ?? {};
+
     await updateSet.mutateAsync({
       sessionId,
       exerciseIndex,
       setData: {
         setNumber,
-        reps: set.reps,
-        weight: set.weight,
-        durationInSeconds: set.duration || 0,
+        reps: edits.reps ?? set.reps,
+        weight: edits.weight ?? set.weight,
+        durationInSeconds: edits.durationInSeconds ?? set.duration ?? 0,
         completed: !set.completed,
       },
+    });
+
+    setPendingEdits((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
     });
   }
 
@@ -209,7 +212,10 @@ function ActiveLog() {
 
               {/* Set rows */}
               <div className="flex flex-col gap-1 mb-3">
-                {exercise.sets?.map((set) => (
+                {exercise.sets?.map((set) => {
+                  const key = `${exerciseIndex}-${set.setNumber}`;
+                  const edits = pendingEdits[key] ?? {};
+                  return (
                   <div
                     key={set.setNumber}
                     className={`grid items-center gap-2 p-1 rounded transition-colors ${
@@ -229,9 +235,9 @@ function ActiveLog() {
                       <input
                         type="number"
                         min={0}
-                        value={set.duration || 0}
+                        value={edits.durationInSeconds ?? set.duration ?? 0}
                         onChange={(e) =>
-                          handleUpdateSet(
+                          setPendingField(
                             exerciseIndex,
                             set.setNumber,
                             "durationInSeconds",
@@ -245,9 +251,9 @@ function ActiveLog() {
                         <input
                           type="number"
                           min={0}
-                          value={set.reps}
+                          value={edits.reps ?? set.reps}
                           onChange={(e) =>
-                            handleUpdateSet(
+                            setPendingField(
                               exerciseIndex,
                               set.setNumber,
                               "reps",
@@ -259,9 +265,9 @@ function ActiveLog() {
                         <input
                           type="number"
                           min={0}
-                          value={set.weight}
+                          value={edits.weight ?? set.weight}
                           onChange={(e) =>
-                            handleUpdateSet(
+                            setPendingField(
                               exerciseIndex,
                               set.setNumber,
                               "weight",
@@ -289,7 +295,8 @@ function ActiveLog() {
                       ✓
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Add Set button */}
