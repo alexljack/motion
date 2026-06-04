@@ -15,6 +15,7 @@ const workoutTemplateSchema = new mongoose.Schema(
     },
     estimatedDurationMinutes: Number,
     isPublic: { type: Boolean, default: false },
+    isApproved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

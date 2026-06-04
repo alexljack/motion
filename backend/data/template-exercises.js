@@ -120,6 +120,21 @@ const templateExercises = {
     { exerciseName: "push ups",             orderIndex: 4, targetSets: 4, targetReps: 10, restSeconds: 20 },
     { exerciseName: "plank",                orderIndex: 5, targetSets: 4, targetDurationSeconds: 30, restSeconds: 15 },
   ],
+  "Legs and Shoulders": [
+    { exerciseName: "squats", orderIndex: 0 },
+    { exerciseName: "lunges", orderIndex: 1 },
+    { exerciseName: "hip thrusts", orderIndex: 2 },
+    { exerciseName: "leg press", orderIndex: 3 },
+    { exerciseName: "leg curl", orderIndex: 4 },
+    { exerciseName: "leg extension", orderIndex: 5 },
+    { exerciseName: "calf raises", orderIndex: 6 },
+    { exerciseName: "overhead press", orderIndex: 7 },
+    { exerciseName: "lateral raises", orderIndex: 8 },
+    { exerciseName: "front raises", orderIndex: 9 }
+  ],
+  "Test": [
+    { exerciseName: "russian twists", orderIndex: 0 }
+  ],
 };
 
 export default templateExercises;
