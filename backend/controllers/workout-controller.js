@@ -46,4 +46,59 @@ const getWorkoutById = asyncHandler(async (req, res) => {
   res.json({ ...workout.toObject(), exercises });
 });
 
-export { getWorkouts, getWorkoutById };
+// @desc Create a new workout template
+// @route POST /api/workouts
+// @access Private
+const createWorkout = asyncHandler(async (req, res) => {
+  const { name, description, difficultyLevel, estimatedDurationMinutes, isPublic } = req.body;
+
+  const workout = await Workout.create({
+    user: req.user._id,
+    name,
+    description,
+    difficultyLevel,
+    estimatedDurationMinutes,
+    isPublic: isPublic || false,
+  });
+
+  res.status(201).json({ ...workout.toObject(), exercises: [] });
+});
+
+// @desc Add an exercise to a workout template
+// @route POST /api/workouts/:id/exercises
+// @access Private
+const addExerciseToWorkout = asyncHandler(async (req, res) => {
+  const workout = await Workout.findById(req.params.id);
+  if (!workout) {
+    res.status(404);
+    throw new Error("Workout not found");
+  }
+  if (workout.user.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("Not authorized");
+  }
+
+  const existingCount = await TemplateExercise.countDocuments({
+    workoutTemplate: workout._id,
+  });
+
+  const { exerciseId, targetSets, targetReps, targetWeight, targetDurationSeconds, restSeconds, notes } = req.body;
+
+  const templateExercise = await TemplateExercise.create({
+    workoutTemplate: workout._id,
+    exercise: exerciseId,
+    orderIndex: existingCount,
+    targetSets,
+    targetReps,
+    targetWeight,
+    targetDurationSeconds,
+    restSeconds,
+    notes,
+  });
+
+  await templateExercise.populate("exercise", "name category mainTargetMuscle");
+
+  res.status(201).json(templateExercise);
+});
+
+export { getWorkouts, getWorkoutById, createWorkout, addExerciseToWorkout };

@@ -9,9 +9,6 @@ export const Route = createFileRoute("/workouts/")({
       throw redirect({
         to: "/auth",
         search: {
-          // Use the current location to power a redirect after login
-          // (Do not use `router.state.resolvedLocation` as it can
-          // potentially lag behind the actual current location)
           redirect: location.href,
         },
       });
@@ -22,11 +19,17 @@ export const Route = createFileRoute("/workouts/")({
 
 function WorkoutIndex() {
   const { data: workouts } = useListWorkouts();
-  console.log("workouts", workouts);
   return (
-    <div>
-      Hello "/workouts/"!
-      <p>Select a workout from below</p>
+    <div className="p-2">
+      <div className="flex items-center justify-between mb-3">
+        <span>Workouts</span>
+        <Link
+          to="/workouts/new"
+          className="px-3 py-1 bg-orange-500 text-black text-sm font-medium rounded hover:bg-orange-400"
+        >
+          + New workout
+        </Link>
+      </div>
       <div className="grid grid-cols-3">
         {workouts?.map((workout) => (
           <Link
@@ -34,10 +37,7 @@ function WorkoutIndex() {
             params={{ id: workout._id }}
             key={workout._id}
           >
-            <div
-              className="h-12 border bg-orange-500 text-center content-center cursor-pointer"
-              key={workout._id}
-            >
+            <div className="h-12 border bg-orange-500 text-center content-center cursor-pointer">
               <h3>{workout.name}</h3>
             </div>
           </Link>
