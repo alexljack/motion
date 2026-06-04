@@ -29,9 +29,23 @@ function NewExercise() {
   const [mainTargetMuscle, setMainTargetMuscle] = useState("");
   const [description, setDescription] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [muscleGroupInput, setMuscleGroupInput] = useState("");
+  const [muscleGroups, setMuscleGroups] = useState<string[]>([]);
   const [equipmentInput, setEquipmentInput] = useState("");
   const [equipmentNeeded, setEquipmentNeeded] = useState<string[]>([]);
   const [isCompound, setIsCompound] = useState(false);
+
+  function addMuscleGroup() {
+    const trimmed = muscleGroupInput.trim().toLowerCase();
+    if (trimmed && !muscleGroups.includes(trimmed)) {
+      setMuscleGroups((prev) => [...prev, trimmed]);
+    }
+    setMuscleGroupInput("");
+  }
+
+  function removeMuscleGroup(item: string) {
+    setMuscleGroups((prev) => prev.filter((m) => m !== item));
+  }
 
   function addEquipment() {
     const trimmed = equipmentInput.trim();
@@ -54,6 +68,7 @@ function NewExercise() {
       mainTargetMuscle: mainTargetMuscle.trim(),
       description: description.trim() || undefined,
       instructions: instructions.trim() || undefined,
+      muscleGroups,
       equipmentNeeded,
       isCompound,
     });
@@ -117,6 +132,51 @@ function NewExercise() {
             placeholder="e.g. Quadriceps"
             className="w-full p-2 border rounded bg-transparent"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Muscle groups</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={muscleGroupInput}
+              onChange={(e) => setMuscleGroupInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addMuscleGroup();
+                }
+              }}
+              placeholder="e.g. Hamstrings"
+              className="flex-1 p-2 border rounded bg-transparent"
+            />
+            <button
+              type="button"
+              onClick={addMuscleGroup}
+              className="px-3 py-2 border rounded hover:bg-orange-500 hover:text-black"
+            >
+              Add
+            </button>
+          </div>
+          {muscleGroups.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {muscleGroups.map((item) => (
+                <span
+                  key={item}
+                  className="flex items-center gap-1 px-2 py-1 bg-orange-500 text-black text-sm rounded capitalize"
+                >
+                  {item}
+                  <button
+                    type="button"
+                    onClick={() => removeMuscleGroup(item)}
+                    className="leading-none hover:text-red-700"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
