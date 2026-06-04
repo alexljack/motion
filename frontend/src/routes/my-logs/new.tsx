@@ -1,5 +1,6 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useListExercises } from "../../api/exercises/use-list-exercises";
 import useListWorkouts from "../../api/workouts/use-list-workouts";
 import {
   useCreateWorkoutSession,
@@ -17,8 +18,8 @@ export const Route = createFileRoute("/my-logs/new")({
   component: NewLog,
 });
 
-type TemplateExercise = {
-  id: string;
+type SessionExercise = {
+  uid: string;
   exerciseId: string;
   name: string;
   category: string;
@@ -29,23 +30,18 @@ function NewLog() {
   const navigate = useNavigate();
 
   const { data: workouts } = useListWorkouts();
+  const { data: allExercises } = useListExercises();
 
   const createSession = useCreateWorkoutSession();
   const startSession = useStartWorkoutSession();
 
   const [sessionName, setSessionName] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [templateExercises, setTemplateExercises] = useState<
-    TemplateExercise[]
-  >([]);
-  const [selectedExercises, setSelectedExercises] = useState<
-    TemplateExercise[]
-  >([]);
+  const [selectedExercises, setSelectedExercises] = useState<SessionExercise[]>([]);
 
   function handleTemplateChange(templateId: string) {
     setSelectedTemplateId(templateId);
     if (!templateId) {
-      setTemplateExercises([]);
       setSelectedExercises([]);
       setSessionName("");
       return;
@@ -54,33 +50,40 @@ function NewLog() {
     if (!template) return;
 
     setSessionName(template.name);
-    const exercises: TemplateExercise[] = template.exercises
+    const exercises: SessionExercise[] = template.exercises
       .slice()
       .sort((a, b) => a.orderIndex - b.orderIndex)
       .map((te) => ({
-        id: crypto.randomUUID(),
+        uid: crypto.randomUUID(),
         exerciseId: te.exercise._id,
         name: te.exercise.name,
         category: te.exercise.category ?? "strength",
         mainTargetMuscle: te.exercise.mainTargetMuscle,
       }));
-    setTemplateExercises(exercises);
-    setSelectedExercises([]);
+    setSelectedExercises(exercises);
   }
 
-  function handleSelectExercise(id: string) {
-    const exercise = templateExercises.find((ex) => ex.id === id);
+  function handleAddExercise(exerciseId: string) {
+    const exercise = allExercises?.find((ex) => ex._id === exerciseId);
     if (!exercise) return;
-    setSelectedExercises((prev) => [...prev, exercise]);
+    setSelectedExercises((prev) => [
+      ...prev,
+      {
+        uid: crypto.randomUUID(),
+        exerciseId: exercise._id,
+        name: exercise.name,
+        category: exercise.category ?? "strength",
+        mainTargetMuscle: exercise.mainTargetMuscle,
+      },
+    ]);
   }
 
-  function removeExercise(id: string) {
-    setSelectedExercises((prev) => prev.filter((ex) => ex.id !== id));
+  function removeExercise(uid: string) {
+    setSelectedExercises((prev) => prev.filter((ex) => ex.uid !== uid));
   }
 
-  // Exercises not yet added to the session
-  const availableExercises = templateExercises.filter(
-    (ex) => !selectedExercises.some((sel) => sel.id === ex.id),
+  const availableExercises = allExercises?.filter(
+    (ex) => !selectedExercises.some((sel) => sel.exerciseId === ex._id),
   );
 
   async function handleSubmit(e: React.FormEvent) {
@@ -106,6 +109,7 @@ function NewLog() {
   }
 
   const isSubmitting = createSession.isPending || startSession.isPending;
+
   return (
     <PageWrapper pageName="New workout">
       <form onSubmit={handleSubmit} className="max-w-2xl flex flex-col gap-6">
@@ -124,14 +128,14 @@ function NewLog() {
         {/* Template picker */}
         <div>
           <label className="block text-sm font-medium mb-1">
-            Select a workout template
+            Start from a template (optional)
           </label>
           <select
             value={selectedTemplateId}
             onChange={(e) => handleTemplateChange(e.target.value)}
             className="w-full p-2 border rounded bg-transparent capitalize"
           >
-            <option value="">— select a template —</option>
+            <option value="">— no template —</option>
             {workouts?.map((w) => (
               <option key={w._id} value={w._id} className="capitalize">
                 {w.name}
@@ -140,62 +144,60 @@ function NewLog() {
           </select>
         </div>
 
-        {/* Exercise picker */}
-        {selectedTemplateId && (
-          <div className="flex flex-col gap-3">
-            <select
-              value=""
-              onChange={(e) => handleSelectExercise(e.target.value)}
-              className="w-full p-2 border rounded bg-transparent capitalize"
-              disabled={availableExercises.length === 0}
-            >
-              <option value="">
-                {availableExercises.length === 0
-                  ? "— all exercises added —"
-                  : "— add an exercise —"}
+        {/* Exercise picker — all exercises */}
+        <div className="flex flex-col gap-3">
+          <label className="block text-sm font-medium">Exercises</label>
+          <select
+            value=""
+            onChange={(e) => handleAddExercise(e.target.value)}
+            className="w-full p-2 border rounded bg-transparent capitalize"
+            disabled={!availableExercises || availableExercises.length === 0}
+          >
+            <option value="">
+              {!availableExercises || availableExercises.length === 0
+                ? "— all exercises added —"
+                : "— add an exercise —"}
+            </option>
+            {availableExercises?.map((ex) => (
+              <option key={ex._id} value={ex._id} className="capitalize">
+                {ex.name} · {ex.mainTargetMuscle}
               </option>
-              {availableExercises.map((ex) => (
-                <option key={ex.id} value={ex.id} className="capitalize">
-                  {ex.name} · {ex.mainTargetMuscle}
-                </option>
-              ))}
-            </select>
+            ))}
+          </select>
 
-            {/* Selected exercises */}
-            {selectedExercises.length > 0 && (
-              <div className="flex flex-col gap-2">
-                {selectedExercises.map((exercise) => (
-                  <div
-                    key={exercise.id}
-                    className="border rounded p-3 flex items-center gap-3"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium capitalize text-sm truncate">
-                        {exercise.name}
-                      </p>
-                      <p className="text-xs text-gray-400 capitalize">
-                        {exercise.mainTargetMuscle}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeExercise(exercise.id)}
-                      className="text-gray-400 hover:text-red-400 text-lg leading-none"
-                    >
-                      ×
-                    </button>
+          {selectedExercises.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {selectedExercises.map((exercise) => (
+                <div
+                  key={exercise.uid}
+                  className="border rounded p-3 flex items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium capitalize text-sm truncate">
+                      {exercise.name}
+                    </p>
+                    <p className="text-xs text-gray-400 capitalize">
+                      {exercise.mainTargetMuscle}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  <button
+                    type="button"
+                    onClick={() => removeExercise(exercise.uid)}
+                    className="text-gray-400 hover:text-red-400 text-lg leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-        {!selectedTemplateId && (
-          <p className="text-gray-400 text-sm py-8 text-center border rounded">
-            Select a workout template to get started
-          </p>
-        )}
+          {selectedExercises.length === 0 && (
+            <p className="text-gray-400 text-sm py-6 text-center border rounded">
+              Add at least one exercise to start
+            </p>
+          )}
+        </div>
 
         <button
           type="submit"

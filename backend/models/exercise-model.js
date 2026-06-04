@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 
 const exerciseSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    isApproved: { type: Boolean, default: false },
+    name: { type: String, required: true },
     description: String,
     image: String,
     category: {

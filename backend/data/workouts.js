@@ -6,6 +6,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "back and biceps",
@@ -13,6 +14,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "legs",
@@ -20,6 +22,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "shoulders and abs",
@@ -27,6 +30,7 @@ const workouts = [
     difficultyLevel: "beginner",
     estimatedDurationMinutes: 45,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "full body",
@@ -34,6 +38,7 @@ const workouts = [
     difficultyLevel: "advanced",
     estimatedDurationMinutes: 75,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "cardio blast",
@@ -41,6 +46,7 @@ const workouts = [
     difficultyLevel: "beginner",
     estimatedDurationMinutes: 30,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "beginner total body",
@@ -48,6 +54,7 @@ const workouts = [
     difficultyLevel: "beginner",
     estimatedDurationMinutes: 40,
     isPublic: true,
+    isApproved: true,
   },
   // ── New ──────────────────────────────────────────────────────────────────────
   {
@@ -56,6 +63,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "pull day",
@@ -63,6 +71,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "leg day",
@@ -70,6 +79,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 65,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "upper body",
@@ -77,6 +87,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 60,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "lower body",
@@ -84,6 +95,7 @@ const workouts = [
     difficultyLevel: "intermediate",
     estimatedDurationMinutes: 55,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "core and flexibility",
@@ -91,6 +103,7 @@ const workouts = [
     difficultyLevel: "beginner",
     estimatedDurationMinutes: 30,
     isPublic: true,
+    isApproved: true,
   },
   {
     name: "hiit",
@@ -98,6 +111,23 @@ const workouts = [
     difficultyLevel: "advanced",
     estimatedDurationMinutes: 30,
     isPublic: true,
+    isApproved: true,
+  },
+  {
+    name: "Legs and Shoulders",
+    description: "A workout that targets both your legs and shoulders",
+    difficultyLevel: "beginner",
+    estimatedDurationMinutes: 60,
+    isPublic: false,
+    isApproved: true,
+  },
+  {
+    name: "Test",
+    description: "Test",
+    difficultyLevel: "beginner",
+    estimatedDurationMinutes: 60,
+    isPublic: false,
+    isApproved: true,
   },
 ];
 
