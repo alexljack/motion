@@ -5,12 +5,12 @@ import { Sidebar, TopBar } from "../ui";
 
 export const Route = createRootRoute({
   component: () => (
-    <div className="flex bg-green-500">
+    <div className="flex bg-gray-300">
       <Sidebar />
       <hr />
       <div className="h-dvh w-full">
         <TopBar />
-        <div className="h-[calc(100dvh-48px)] outline bg-gray-200 py-6 px-4 overflow-scroll">
+        <div className="h-[calc(100dvh-48px)] bg-white py-6 px-4 overflow-scroll">
           <Outlet />
         </div>
       </div>
