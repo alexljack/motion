@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import {
+  DumbbellIcon,
+  WeightIcon,
+  SportShoeIcon,
+  ActivityIcon,
+  AppleIcon,
+  LayoutDashboardIcon,
+} from "lucide-react";
 
 import cn from "../../utils/cn";
 
@@ -7,24 +15,23 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const linkStyles = cn(
-    "bg-blue-500 h-11 p-2 rounded-lg flex items-center justify-center transition-all duration-300",
+    "bg-white border h-11 p-2 rounded-lg flex items-center justify-center transition-all duration-300",
     collapsed ? "w-11" : "w-48",
   );
 
   const links = [
-    { to: "/", label: "Home" },
-    { to: "/exercises", label: "Exercises" },
-    { to: "/workouts", label: "Workouts" },
-    { to: "/my-logs", label: "Logs" },
-    { to: "/sleep", label: "Sleep" },
-    { to: "/nutrition", label: "Nutrition" },
-    { to: "/about", label: "About" },
+    { to: "/", label: "Home", icon: LayoutDashboardIcon },
+    { to: "/exercises", label: "Exercises", icon: DumbbellIcon },
+    { to: "/workouts", label: "Workouts", icon: WeightIcon },
+    { to: "/my-logs", label: "Logs", icon: SportShoeIcon },
+    { to: "/sleep", label: "Sleep", icon: ActivityIcon },
+    { to: "/nutrition", label: "Nutrition", icon: AppleIcon },
   ];
 
   return (
     <div
       className={cn(
-        "h-dvh bg-gray-400 py-2 px-2 flex flex-col transition-all duration-300",
+        "h-dvh bg-white py-2 px-2 flex flex-col transition-all duration-300",
         collapsed ? "w-16" : "w-52",
       )}
     >
@@ -34,13 +41,13 @@ const Sidebar = () => {
         )}
         onClick={() => setCollapsed(!collapsed)}
       >
-        <span>M</span>
+        <span className="font-semibold">M</span>
       </div>
       <div className="h-full flex flex-col gap-2">
         {links.map((link) => (
           <div key={link.to} className={linkStyles}>
             <Link to={link.to} className="[&.active]:font-bold">
-              {link.label}
+              {collapsed ? <link.icon /> : link.label}
             </Link>
           </div>
         ))}

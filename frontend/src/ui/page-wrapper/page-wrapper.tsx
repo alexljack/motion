@@ -10,7 +10,7 @@ const PageWrapper = ({
 }: PropsWithChildren<PageWrapperType>) => {
   return (
     <div className="p-2 h-full">
-      <div>{pageName}</div>
+      <div className="font-semibold text-xl">{pageName}</div>
       {children}
     </div>
   );

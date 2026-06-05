@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { UserIcon } from "lucide-react";
 
 import useLogout from "../../api/authentication/use-logout";
 
@@ -20,15 +21,26 @@ const TopBar = () => {
     logout();
   };
 
+  const buttonStyles =
+    "border rounded p-1 cursor-pointer disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed";
+
   return (
-    <div className="h-12 bg-red-500 w-full p-3">
+    <div className="h-12 flex items-center bg-white w-full p-3">
       <div className="w-full flex justify-end gap-2">
-        <div>Notifications</div>
-        <div>Language</div>
+        <button className={buttonStyles} disabled>
+          Notifications
+        </button>
+        <button className={buttonStyles} disabled>
+          Language
+        </button>
         <Link to={"/profile"}>
-          <div>Avatar</div>
+          <button className={buttonStyles}>
+            <UserIcon />
+          </button>
         </Link>
-        <button onClick={handleLogout}>Logout</button>
+        <button className={buttonStyles} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </div>
   );
