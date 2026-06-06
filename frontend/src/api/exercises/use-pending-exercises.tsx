@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import { Exercise } from "./use-list-exercises";
 
@@ -12,13 +12,16 @@ type PendingExercise = Exercise & {
   isApproved: false;
 };
 
-export function usePendingExercises() {
+export function usePendingExercises(
+  options?: Omit<UseQueryOptions<PendingExercise[]>, "queryFn" | "queryKey">,
+) {
   return useQuery<PendingExercise[]>({
     queryKey: ["pending-exercises"],
     queryFn: async () => {
       const response = await axios.get("/api/exercises/pending");
       return response.data;
     },
+    ...options,
   });
 }
 

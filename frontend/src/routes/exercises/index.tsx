@@ -8,6 +8,7 @@ import {
 } from "../../api/exercises/use-list-exercises";
 import { usePendingExercises } from "../../api/exercises/use-pending-exercises";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
+import { enable, enabled } from "colors";
 
 export const Route = createFileRoute("/exercises/")({
   beforeLoad: async ({ location }) => {
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/exercises/")({
 function ExerciseIndex() {
   const { data: profile } = useUserProfile();
   const { data: exercises } = useListExercises();
-  const { data: pending } = usePendingExercises();
+  const { data: pending } = usePendingExercises({ enabled: profile?.isAdmin });
   const approve = useApproveExercise();
   const remove = useDeleteExercise();
 

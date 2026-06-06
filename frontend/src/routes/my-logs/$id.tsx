@@ -13,11 +13,15 @@ import {
 } from "react-hook-form";
 import {
   useCompleteWorkoutSession,
+  useDeleteWorkoutSession,
   useUpdateExerciseSet,
   useWorkoutSession,
 } from "../../api/workouts/use-workout-sessions";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
-import type { PopulatedExercise, WorkoutExercise } from "../../api/workout-types";
+import type {
+  PopulatedExercise,
+  WorkoutExercise,
+} from "../../api/workout-types";
 
 type SetValues = {
   reps: number;
@@ -50,7 +54,9 @@ function ActiveLog() {
   const { data: session, isLoading, error } = useWorkoutSession(sessionId);
   const updateSet = useUpdateExerciseSet();
   const completeSession = useCompleteWorkoutSession();
+  const deleteSession = useDeleteWorkoutSession();
   const [showFinishModal, setShowFinishModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const methods = useForm<FormValues>({
     defaultValues: { exercises: [], rating: 3, feeling: "good", notes: "" },
@@ -144,9 +150,7 @@ function ActiveLog() {
         <div className="flex flex-col gap-6 mb-8">
           {session.exercises.map((exercise, exerciseIndex) => (
             <ExerciseCard
-              key={
-                (exercise.exercise as PopulatedExercise)._id + exerciseIndex
-              }
+              key={(exercise.exercise as PopulatedExercise)._id + exerciseIndex}
               exercise={exercise}
               exerciseIndex={exerciseIndex}
               sessionId={sessionId}
@@ -157,19 +161,28 @@ function ActiveLog() {
         </div>
 
         {session.status !== "completed" && (
-          <button
-            type="button"
-            onClick={() => setShowFinishModal(true)}
-            className="w-full py-3 bg-orange-500 text-black font-semibold rounded hover:bg-orange-400"
-          >
-            Finish workout
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => setShowFinishModal(true)}
+              className="w-full py-3 bg-orange-500 text-black font-semibold rounded hover:bg-orange-400"
+            >
+              Finish workout
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCancelModal(true)}
+              className="w-full py-2 border border-red-500/50 text-red-400 text-sm rounded hover:bg-red-500/10 transition-colors"
+            >
+              Cancel workout
+            </button>
+          </div>
         )}
 
         {/* Finish modal */}
         {showFinishModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div className="bg-zinc-900 border rounded-lg p-6 w-full max-w-sm flex flex-col gap-4">
+            <div className="bg-zinc-300 border rounded-lg p-6 w-full max-w-sm flex flex-col gap-4">
               <h2 className="text-lg font-semibold">How was your workout?</h2>
 
               <div>
@@ -250,6 +263,37 @@ function ActiveLog() {
             </div>
           </div>
         )}
+        {showCancelModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+            <div className="bg-zinc-900 border rounded-lg p-6 w-full max-w-sm flex flex-col gap-4">
+              <h2 className="text-lg font-semibold">Cancel workout?</h2>
+              <p className="text-sm text-gray-400">
+                This will permanently delete this workout session. This cannot
+                be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCancelModal(false)}
+                  className="flex-1 py-2 border rounded text-sm hover:bg-white/5"
+                >
+                  Keep going
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteSession.isPending}
+                  onClick={async () => {
+                    await deleteSession.mutateAsync(sessionId);
+                    navigate({ to: "/my-logs" });
+                  }}
+                  className="flex-1 py-2 bg-red-600 text-white font-semibold rounded text-sm hover:bg-red-500 disabled:opacity-40"
+                >
+                  {deleteSession.isPending ? "Cancelling..." : "Yes, cancel"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </PageWrapper>
     </FormProvider>
   );
@@ -282,9 +326,9 @@ function ExerciseCard({
   async function handleAddSet() {
     const previousSet = exercise.sets?.[exercise.sets.length - 1];
     const newSetValues: SetValues = {
-      reps: isCardio ? 0 : previousSet?.reps ?? 10,
-      weight: isCardio ? 0 : previousSet?.weight ?? 0,
-      durationInSeconds: isCardio ? previousSet?.duration ?? 60 : 0,
+      reps: isCardio ? 0 : (previousSet?.reps ?? 10),
+      weight: isCardio ? 0 : (previousSet?.weight ?? 0),
+      durationInSeconds: isCardio ? (previousSet?.duration ?? 60) : 0,
     };
 
     await updateSet.mutateAsync({
