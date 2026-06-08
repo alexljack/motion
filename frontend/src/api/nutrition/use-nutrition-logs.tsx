@@ -10,6 +10,8 @@ export interface NutritionLog {
   carbs: number;
   fat: number;
   notes?: string;
+  label?: string;
+  category?: string;
   createdAt: string;
   updatedAt: string;
 }

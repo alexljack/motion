@@ -13,6 +13,11 @@ const nutritionLogSchema = new mongoose.Schema(
     carbs: { type: Number, default: 0 },   // grams
     fat: { type: Number, default: 0 },     // grams
     notes: String,
+    label: String,
+    category: {
+      type: String,
+      enum: ["meat", "fish", "dairy", "eggs", "grains", "vegetables", "fruit", "nuts", "legumes", "snacks", "drinks", "other"],
+    },
   },
   { timestamps: true }
 );
