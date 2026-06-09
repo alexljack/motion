@@ -12,7 +12,7 @@ export const Route = createFileRoute("/nutrition/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { data: logs, isLoading } = useNutritionLogs();
   const createLog = useCreateNutritionLog();
   const deleteLog = useDeleteNutritionLog();

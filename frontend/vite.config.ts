@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [TanStackRouterVite(), react(), tailwindcss()],
+  plugins: [TanStackRouterVite({ routeFileIgnorePattern: ".(test|spec)." }), react(), tailwindcss()],
   server: {
     // proxy requests prefixed '/api' and '/uploads'
     proxy: {
