@@ -5,6 +5,7 @@ import {
   useBodyMeasurements,
   useCreateBodyMeasurement,
   useDeleteBodyMeasurement,
+  useUpdateBodyMeasurement,
   useMeasurementTrends,
   type TrendDataPoint,
   type BodyMeasurement,
@@ -38,6 +39,7 @@ export function RouteComponent() {
   const { data: trends } = useMeasurementTrends("weight", period);
   const createEntry = useCreateBodyMeasurement();
   const deleteEntry = useDeleteBodyMeasurement();
+  const updateEntry = useUpdateBodyMeasurement();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,7 +186,12 @@ export function RouteComponent() {
         {isLoading && <div>Loading...</div>}
         <div className="flex flex-col gap-2">
           {entries?.map((entry) => (
-            <WeightEntry key={entry._id} entry={entry} onDelete={() => deleteEntry.mutate(entry._id)} />
+            <WeightEntry
+            key={entry._id}
+            entry={entry}
+            onDelete={() => deleteEntry.mutate(entry._id)}
+            onUpdate={(data) => updateEntry.mutate({ id: entry._id, data })}
+          />
           ))}
         </div>
       </div>
@@ -256,13 +263,126 @@ function WeightChart({ data }: { data: TrendDataPoint[] }) {
   );
 }
 
-function WeightEntry({ entry, onDelete }: { entry: BodyMeasurement; onDelete: () => void }) {
+function WeightEntry({
+  entry,
+  onDelete,
+  onUpdate,
+}: {
+  entry: BodyMeasurement;
+  onDelete: () => void;
+  onUpdate: (data: Partial<BodyMeasurement>) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    value: String(entry.value),
+    unit: entry.unit,
+    measuredDate: entry.measuredDate.split("T")[0],
+    timeOfDay: entry.timeOfDay ?? "",
+    conditions: entry.conditions ?? "",
+    notes: entry.notes ?? "",
+  });
+
   const date = new Date(entry.measuredDate).toLocaleDateString(undefined, {
     weekday: "short", month: "short", day: "numeric",
   });
-
   const changeColor =
     entry.change == null ? "" : entry.change < 0 ? "text-green-600" : "text-red-500";
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    onUpdate({
+      value: Number(form.value),
+      unit: form.unit,
+      measuredDate: form.measuredDate,
+      timeOfDay: form.timeOfDay || undefined,
+      conditions: form.conditions || undefined,
+      notes: form.notes || undefined,
+    });
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <form onSubmit={handleSave} className="flex flex-col gap-2 border p-3 rounded">
+        <div className="flex gap-2">
+          <label className="flex flex-col gap-1 text-sm flex-1">
+            Weight
+            <input
+              type="number"
+              min={0}
+              step="0.1"
+              value={form.value}
+              onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
+              className="border rounded p-1"
+              required
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm w-24">
+            Unit
+            <select
+              value={form.unit}
+              onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+              className="border rounded p-1"
+            >
+              <option value="lbs">lbs</option>
+              <option value="kg">kg</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            Date
+            <input
+              type="date"
+              value={form.measuredDate}
+              onChange={(e) => setForm((f) => ({ ...f, measuredDate: e.target.value }))}
+              className="border rounded p-1"
+              required
+            />
+          </label>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="flex flex-col gap-1 text-sm">
+            Time of day
+            <select
+              value={form.timeOfDay}
+              onChange={(e) => setForm((f) => ({ ...f, timeOfDay: e.target.value }))}
+              className="border rounded p-1"
+            >
+              <option value="">— none —</option>
+              <option value="morning">Morning</option>
+              <option value="afternoon">Afternoon</option>
+              <option value="evening">Evening</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            Conditions
+            <input
+              type="text"
+              value={form.conditions}
+              onChange={(e) => setForm((f) => ({ ...f, conditions: e.target.value }))}
+              className="border rounded p-1"
+            />
+          </label>
+        </div>
+        <label className="flex flex-col gap-1 text-sm">
+          Notes
+          <input
+            type="text"
+            value={form.notes}
+            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            className="border rounded p-1"
+          />
+        </label>
+        <div className="flex gap-2 justify-end">
+          <button type="button" onClick={() => setEditing(false)} className="px-3 py-1 text-sm border rounded">
+            Cancel
+          </button>
+          <button type="submit" className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+            Save
+          </button>
+        </div>
+      </form>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between border p-3 rounded gap-4">
@@ -280,7 +400,10 @@ function WeightEntry({ entry, onDelete }: { entry: BodyMeasurement; onDelete: ()
         {entry.conditions && <span className="text-xs text-gray-400">{entry.conditions}</span>}
         {entry.notes && <span className="text-xs text-gray-400">{entry.notes}</span>}
       </div>
-      <button onClick={onDelete} className="text-red-400 text-sm shrink-0">Delete</button>
+      <div className="flex gap-2 shrink-0">
+        <button onClick={() => setEditing(true)} className="text-blue-400 text-sm">Edit</button>
+        <button onClick={onDelete} className="text-red-400 text-sm">Delete</button>
+      </div>
     </div>
   );
 }

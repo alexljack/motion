@@ -7,6 +7,7 @@ import {
   useBodyMeasurements,
   useCreateBodyMeasurement,
   useDeleteBodyMeasurement,
+  useUpdateBodyMeasurement,
   useMeasurementTrends,
   type BodyMeasurement,
 } from "./use-body-measurements";
@@ -134,6 +135,37 @@ describe("useCreateBodyMeasurement", () => {
     expect(body?.unit).toBe("kg");
     expect(body?.timeOfDay).toBe("morning");
     expect(body?.conditions).toBe("fasted");
+  });
+});
+
+describe("useUpdateBodyMeasurement", () => {
+  it("sends a PUT request for the given id and returns the updated measurement", async () => {
+    const updated = { ...mockMeasurements[0], value: 175 };
+    server.use(
+      http.put("/api/body-measurements/:id", () => HttpResponse.json(updated))
+    );
+    const { result } = renderHook(() => useUpdateBodyMeasurement(), {
+      wrapper: createWrapper(),
+    });
+    result.current.mutate({ id: "1", data: { value: 175 } });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.value).toBe(175);
+  });
+
+  it("sends the correct id in the URL", async () => {
+    let capturedId = "";
+    server.use(
+      http.put("/api/body-measurements/:id", ({ params }) => {
+        capturedId = params.id as string;
+        return HttpResponse.json(mockMeasurements[1]);
+      })
+    );
+    const { result } = renderHook(() => useUpdateBodyMeasurement(), {
+      wrapper: createWrapper(),
+    });
+    result.current.mutate({ id: "42", data: { value: 179 } });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(capturedId).toBe("42");
   });
 });
 

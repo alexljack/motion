@@ -69,6 +69,21 @@ export const useCreateBodyMeasurement = () => {
   });
 };
 
+export const useUpdateBodyMeasurement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<BodyMeasurement> }) => {
+      const response = await axios.put(`/api/body-measurements/${id}`, data);
+      return response.data as BodyMeasurement;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["body-measurements"] });
+      queryClient.invalidateQueries({ queryKey: ["measurement-trends"] });
+    },
+  });
+};
+
 export const useDeleteBodyMeasurement = () => {
   const queryClient = useQueryClient();
 

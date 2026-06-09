@@ -59,6 +59,7 @@ const mockTrends = {
 
 const mockCreate = vi.fn();
 const mockDelete = vi.fn();
+const mockUpdate = vi.fn();
 
 beforeEach(() => {
   vi.mocked(hooks.useBodyMeasurements).mockReturnValue({
@@ -72,6 +73,9 @@ beforeEach(() => {
   vi.mocked(hooks.useDeleteBodyMeasurement).mockReturnValue({
     mutate: mockDelete,
   } as unknown as ReturnType<typeof hooks.useDeleteBodyMeasurement>);
+  vi.mocked(hooks.useUpdateBodyMeasurement).mockReturnValue({
+    mutate: mockUpdate,
+  } as unknown as ReturnType<typeof hooks.useUpdateBodyMeasurement>);
   vi.mocked(hooks.useMeasurementTrends).mockReturnValue({
     data: mockTrends,
   } as unknown as ReturnType<typeof hooks.useMeasurementTrends>);
@@ -172,5 +176,40 @@ describe("WeightPage", () => {
     } as unknown as ReturnType<typeof hooks.useBodyMeasurements>);
     render(<RouteComponent />);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  it("renders an Edit button for each entry", () => {
+    render(<RouteComponent />);
+    expect(screen.getAllByRole("button", { name: /edit/i })).toHaveLength(3);
+  });
+
+  it("clicking Edit expands the inline edit form pre-filled with the entry's value", async () => {
+    const user = userEvent.setup();
+    render(<RouteComponent />);
+    await user.click(screen.getAllByRole("button", { name: /edit/i })[0]);
+    const valueInput = screen.getAllByLabelText(/^weight$/i)[0];
+    expect(valueInput).toHaveValue(180);
+  });
+
+  it("clicking Cancel in the edit form collapses it without saving", async () => {
+    const user = userEvent.setup();
+    render(<RouteComponent />);
+    await user.click(screen.getAllByRole("button", { name: /edit/i })[0]);
+    await user.click(screen.getByRole("button", { name: /^cancel$/i }));
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("button", { name: /edit/i })).toHaveLength(3);
+  });
+
+  it("submitting the edit form calls update with the correct id and data", async () => {
+    const user = userEvent.setup();
+    render(<RouteComponent />);
+    await user.click(screen.getAllByRole("button", { name: /edit/i })[0]);
+    const valueInput = screen.getAllByLabelText(/^weight$/i)[0];
+    await user.clear(valueInput);
+    await user.type(valueInput, "182");
+    await user.click(screen.getByRole("button", { name: /^save$/i }));
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "1", data: expect.objectContaining({ value: 182 }) })
+    );
   });
 });
