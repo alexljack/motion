@@ -8,7 +8,6 @@ import {
 } from "../../api/exercises/use-list-exercises";
 import { usePendingExercises } from "../../api/exercises/use-pending-exercises";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
-import { enable, enabled } from "colors";
 
 export const Route = createFileRoute("/exercises/")({
   beforeLoad: async ({ location }) => {
