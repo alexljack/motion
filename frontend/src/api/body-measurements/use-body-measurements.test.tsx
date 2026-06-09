@@ -8,6 +8,7 @@ import {
   useCreateBodyMeasurement,
   useDeleteBodyMeasurement,
   useUpdateBodyMeasurement,
+  useLatestBodyMeasurement,
   useMeasurementTrends,
   type BodyMeasurement,
 } from "./use-body-measurements";
@@ -135,6 +136,55 @@ describe("useCreateBodyMeasurement", () => {
     expect(body?.unit).toBe("kg");
     expect(body?.timeOfDay).toBe("morning");
     expect(body?.conditions).toBe("fasted");
+  });
+});
+
+describe("useLatestBodyMeasurement", () => {
+  it("returns the first item from the API response", async () => {
+    server.use(
+      http.get("/api/body-measurements", () => HttpResponse.json([mockMeasurements[0]]))
+    );
+    const { result } = renderHook(() => useLatestBodyMeasurement("weight"), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?._id).toBe("1");
+    expect(result.current.data?.value).toBe(180);
+  });
+
+  it("returns null when no measurements exist", async () => {
+    server.use(
+      http.get("/api/body-measurements", () => HttpResponse.json([]))
+    );
+    const { result } = renderHook(() => useLatestBodyMeasurement("weight"), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
+  });
+
+  it("requests limit=1 from the API", async () => {
+    let capturedUrl = "";
+    server.use(
+      http.get("/api/body-measurements", ({ request }) => {
+        capturedUrl = request.url;
+        return HttpResponse.json([mockMeasurements[0]]);
+      })
+    );
+    const { result } = renderHook(() => useLatestBodyMeasurement("weight"), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(capturedUrl).toContain("limit=1");
+    expect(capturedUrl).toContain("measurementType=weight");
+  });
+
+  it("is disabled when measurementType is empty", () => {
+    const { result } = renderHook(() => useLatestBodyMeasurement(""), {
+      wrapper: createWrapper(),
+    });
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(result.current.data).toBeUndefined();
   });
 });
 

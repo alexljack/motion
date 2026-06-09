@@ -69,6 +69,20 @@ export const useCreateBodyMeasurement = () => {
   });
 };
 
+export const useLatestBodyMeasurement = (measurementType: string) => {
+  return useQuery({
+    queryKey: ["body-measurements", "latest", measurementType],
+    queryFn: async () => {
+      const response = await axios.get("/api/body-measurements", {
+        params: { measurementType, limit: 1 },
+      });
+      const data = response.data as BodyMeasurement[];
+      return data[0] ?? null;
+    },
+    enabled: !!measurementType,
+  });
+};
+
 export const useUpdateBodyMeasurement = () => {
   const queryClient = useQueryClient();
 
