@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
@@ -52,14 +51,14 @@ beforeEach(() => {
   vi.mocked(hooks.useNutritionLogs).mockReturnValue({
     data: mockLogs,
     isLoading: false,
-  } as any);
+  } as unknown as ReturnType<typeof hooks.useNutritionLogs>);
   vi.mocked(hooks.useCreateNutritionLog).mockReturnValue({
     mutate: mockCreate,
     isPending: false,
-  } as any);
+  } as unknown as ReturnType<typeof hooks.useCreateNutritionLog>);
   vi.mocked(hooks.useDeleteNutritionLog).mockReturnValue({
     mutate: mockDelete,
-  } as any);
+  } as unknown as ReturnType<typeof hooks.useDeleteNutritionLog>);
 });
 
 afterEach(() => vi.clearAllMocks());
@@ -105,15 +104,22 @@ describe("NutritionPage", () => {
     render(<RouteComponent />);
     await user.click(screen.getByRole("button", { name: /log nutrition/i }));
 
-    await user.type(screen.getByPlaceholderText(/breakfast, lunch, snack/i), "Dinner");
+    await user.type(
+      screen.getByPlaceholderText(/breakfast, lunch, snack/i),
+      "Dinner",
+    );
     await user.selectOptions(screen.getByLabelText(/category/i), "fish");
     await user.type(screen.getByLabelText(/calories/i), "900");
 
     await user.click(screen.getByRole("button", { name: /save/i }));
 
     expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({ label: "Dinner", category: "fish", calories: 900 }),
-      expect.any(Object)
+      expect.objectContaining({
+        label: "Dinner",
+        category: "fish",
+        calories: 900,
+      }),
+      expect.any(Object),
     );
   });
 
@@ -129,7 +135,7 @@ describe("NutritionPage", () => {
     vi.mocked(hooks.useNutritionLogs).mockReturnValue({
       data: undefined,
       isLoading: true,
-    } as any);
+    } as unknown as ReturnType<typeof hooks.useNutritionLogs>);
     render(<RouteComponent />);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });

@@ -7,6 +7,7 @@ import {
   useNutritionLogs,
   useCreateNutritionLog,
   useDeleteNutritionLog,
+  type CreateNutritionLog,
 } from "./use-nutrition-logs";
 
 const createWrapper = () => {
@@ -96,10 +97,10 @@ describe("useCreateNutritionLog", () => {
   });
 
   it("includes label and category in the request body", async () => {
-    let body: any;
+    let body: CreateNutritionLog | undefined;
     server.use(
       http.post("/api/nutrition-logs", async ({ request }) => {
-        body = await request.json();
+        body = await request.json() as CreateNutritionLog;
         return HttpResponse.json(
           { ...body, _id: "99", user: "u1", createdAt: "", updatedAt: "" },
           { status: 201 }
