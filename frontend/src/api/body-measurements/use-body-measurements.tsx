@@ -19,7 +19,26 @@ export interface BodyMeasurement {
   updatedAt: string;
 }
 
-// Get body measurements
+export interface TrendDataPoint {
+  date: string;
+  value: number;
+  change: number;
+  changePercent: number;
+}
+
+export interface MeasurementTrends {
+  measurementType: string;
+  period: string;
+  data: TrendDataPoint[];
+  summary: {
+    latest: number;
+    earliest: number;
+    totalChange: number;
+    totalChangePercent: number | string;
+    dataPoints: number;
+  };
+}
+
 export const useBodyMeasurements = (params?: {
   measurementType?: string;
   startDate?: string;
@@ -35,7 +54,6 @@ export const useBodyMeasurements = (params?: {
   });
 };
 
-// Create body measurement
 export const useCreateBodyMeasurement = () => {
   const queryClient = useQueryClient();
 
@@ -46,11 +64,54 @@ export const useCreateBodyMeasurement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["body-measurements"] });
+      queryClient.invalidateQueries({ queryKey: ["measurement-trends"] });
     },
   });
 };
 
-// Get measurement trends
+export const useLatestBodyMeasurement = (measurementType: string) => {
+  return useQuery({
+    queryKey: ["body-measurements", "latest", measurementType],
+    queryFn: async () => {
+      const response = await axios.get("/api/body-measurements", {
+        params: { measurementType, limit: 1 },
+      });
+      const data = response.data as BodyMeasurement[];
+      return data[0] ?? null;
+    },
+    enabled: !!measurementType,
+  });
+};
+
+export const useUpdateBodyMeasurement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<BodyMeasurement> }) => {
+      const response = await axios.put(`/api/body-measurements/${id}`, data);
+      return response.data as BodyMeasurement;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["body-measurements"] });
+      queryClient.invalidateQueries({ queryKey: ["measurement-trends"] });
+    },
+  });
+};
+
+export const useDeleteBodyMeasurement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await axios.delete(`/api/body-measurements/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["body-measurements"] });
+      queryClient.invalidateQueries({ queryKey: ["measurement-trends"] });
+    },
+  });
+};
+
 export const useMeasurementTrends = (
   measurementType: string,
   period: string = "6m"
@@ -62,7 +123,7 @@ export const useMeasurementTrends = (
         `/api/body-measurements/trends/${measurementType}`,
         { params: { period } }
       );
-      return response.data;
+      return response.data as MeasurementTrends;
     },
     enabled: !!measurementType,
   });
