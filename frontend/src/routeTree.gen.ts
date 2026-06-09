@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
+import { Route as WeightIndexRouteImport } from './routes/weight/index'
 import { Route as SleepIndexRouteImport } from './routes/sleep/index'
 import { Route as NutritionIndexRouteImport } from './routes/nutrition/index'
 import { Route as MyLogsIndexRouteImport } from './routes/my-logs/index'
@@ -54,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
 const WorkoutsIndexRoute = WorkoutsIndexRouteImport.update({
   id: '/workouts/',
   path: '/workouts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeightIndexRoute = WeightIndexRouteImport.update({
+  id: '/weight/',
+  path: '/weight/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SleepIndexRoute = SleepIndexRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/my-logs/': typeof MyLogsIndexRoute
   '/nutrition/': typeof NutritionIndexRoute
   '/sleep/': typeof SleepIndexRoute
+  '/weight/': typeof WeightIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/my-logs': typeof MyLogsIndexRoute
   '/nutrition': typeof NutritionIndexRoute
   '/sleep': typeof SleepIndexRoute
+  '/weight': typeof WeightIndexRoute
   '/workouts': typeof WorkoutsIndexRoute
 }
 export interface FileRoutesById {
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/my-logs/': typeof MyLogsIndexRoute
   '/nutrition/': typeof NutritionIndexRoute
   '/sleep/': typeof SleepIndexRoute
+  '/weight/': typeof WeightIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
 }
 export interface FileRouteTypes {
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/my-logs/'
     | '/nutrition/'
     | '/sleep/'
+    | '/weight/'
     | '/workouts/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/my-logs'
     | '/nutrition'
     | '/sleep'
+    | '/weight'
     | '/workouts'
   id:
     | '__root__'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/my-logs/'
     | '/nutrition/'
     | '/sleep/'
+    | '/weight/'
     | '/workouts/'
   fileRoutesById: FileRoutesById
 }
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   MyLogsIndexRoute: typeof MyLogsIndexRoute
   NutritionIndexRoute: typeof NutritionIndexRoute
   SleepIndexRoute: typeof SleepIndexRoute
+  WeightIndexRoute: typeof WeightIndexRoute
   WorkoutsIndexRoute: typeof WorkoutsIndexRoute
 }
 
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/workouts'
       fullPath: '/workouts/'
       preLoaderRoute: typeof WorkoutsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weight/': {
+      id: '/weight/'
+      path: '/weight'
+      fullPath: '/weight/'
+      preLoaderRoute: typeof WeightIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sleep/': {
@@ -371,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyLogsIndexRoute: MyLogsIndexRoute,
   NutritionIndexRoute: NutritionIndexRoute,
   SleepIndexRoute: SleepIndexRoute,
+  WeightIndexRoute: WeightIndexRoute,
   WorkoutsIndexRoute: WorkoutsIndexRoute,
 }
 export const routeTree = rootRouteImport

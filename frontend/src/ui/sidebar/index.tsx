@@ -7,6 +7,7 @@ import {
   ActivityIcon,
   AppleIcon,
   LayoutDashboardIcon,
+  ScaleIcon,
 } from "lucide-react";
 
 import cn from "../../utils/cn";
@@ -26,6 +27,7 @@ const Sidebar = () => {
     { to: "/my-logs", label: "Logs", icon: SportShoeIcon },
     { to: "/sleep", label: "Sleep", icon: ActivityIcon },
     { to: "/nutrition", label: "Nutrition", icon: AppleIcon },
+    { to: "/weight", label: "Weight", icon: ScaleIcon },
   ];
 
   return (
