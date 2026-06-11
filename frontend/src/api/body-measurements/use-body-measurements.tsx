@@ -1,10 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
+export type MeasurementType =
+  | "weight"
+  | "body-fat"
+  | "muscle-mass"
+  | "chest"
+  | "waist"
+  | "hips"
+  | "bicep"
+  | "thigh"
+  | "neck"
+  | "forearm"
+  | "calf";
+
 export interface BodyMeasurement {
   _id: string;
   user: string;
-  measurementType: string;
+  measurementType: MeasurementType;
   value: number;
   unit: string;
   measuredDate: string;
@@ -27,7 +40,7 @@ export interface TrendDataPoint {
 }
 
 export interface MeasurementTrends {
-  measurementType: string;
+  measurementType: MeasurementType;
   period: string;
   data: TrendDataPoint[];
   summary: {
@@ -40,7 +53,7 @@ export interface MeasurementTrends {
 }
 
 export const useBodyMeasurements = (params?: {
-  measurementType?: string;
+  measurementType?: MeasurementType;
   startDate?: string;
   endDate?: string;
   limit?: number;
@@ -69,7 +82,7 @@ export const useCreateBodyMeasurement = () => {
   });
 };
 
-export const useLatestBodyMeasurement = (measurementType: string) => {
+export const useLatestBodyMeasurement = (measurementType: MeasurementType) => {
   return useQuery({
     queryKey: ["body-measurements", "latest", measurementType],
     queryFn: async () => {
@@ -113,7 +126,7 @@ export const useDeleteBodyMeasurement = () => {
 };
 
 export const useMeasurementTrends = (
-  measurementType: string,
+  measurementType: MeasurementType,
   period: string = "6m"
 ) => {
   return useQuery({

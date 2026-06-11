@@ -1,2 +1,2 @@
 - as the owner of a workout or exercise that i've previously created, i should be able to delete it.
-- 
+- not lose data when updating models and controllers
