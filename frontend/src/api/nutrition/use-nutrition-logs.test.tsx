@@ -120,8 +120,8 @@ describe("useCreateNutritionLog", () => {
       category: "eggs",
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(body.label).toBe("Breakfast");
-    expect(body.category).toBe("eggs");
+    expect(body!.label).toBe("Breakfast");
+    expect(body!.category).toBe("eggs");
   });
 });
 

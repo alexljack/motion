@@ -11,6 +11,7 @@ import {
   useLatestBodyMeasurement,
   useMeasurementTrends,
   type BodyMeasurement,
+  type MeasurementType,
 } from "./use-body-measurements";
 
 const createWrapper = () => {
@@ -180,7 +181,7 @@ describe("useLatestBodyMeasurement", () => {
   });
 
   it("is disabled when measurementType is empty", () => {
-    const { result } = renderHook(() => useLatestBodyMeasurement(""), {
+    const { result } = renderHook(() => useLatestBodyMeasurement("" as MeasurementType), {
       wrapper: createWrapper(),
     });
     expect(result.current.fetchStatus).toBe("idle");
@@ -253,7 +254,7 @@ describe("useMeasurementTrends", () => {
   });
 
   it("is disabled when measurementType is empty", () => {
-    const { result } = renderHook(() => useMeasurementTrends(""), {
+    const { result } = renderHook(() => useMeasurementTrends("" as MeasurementType), {
       wrapper: createWrapper(),
     });
     expect(result.current.fetchStatus).toBe("idle");
