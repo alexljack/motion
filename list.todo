@@ -9,14 +9,9 @@ exercise index:
 
 exercise form:
 
-
 logs index:
-- delete logs from logs index
 
 logs form:
-- easier to input entries on logs form
-- remove a set on logs form
-- add new exercise whilst in logs form
 
 sleep:
 - edit sleep entry

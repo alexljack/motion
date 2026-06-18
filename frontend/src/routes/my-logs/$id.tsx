@@ -552,7 +552,7 @@ function ExerciseCard({
       {/* Column labels */}
       {fields.length > 0 && (
         <div className="flex items-center gap-2 mb-2 px-1">
-          <span className="w-8 shrink-0" />
+          <span className="w-6 shrink-0" />
           {isCardio ? (
             <span className="flex-1 text-xs text-gray-400 text-center">Duration (s)</span>
           ) : (
@@ -562,6 +562,7 @@ function ExerciseCard({
             </>
           )}
           <span className="w-14 shrink-0" />
+          {!sessionCompleted && <span className="w-12 md:w-10 lg:w-8 shrink-0" />}
         </div>
       )}
 
@@ -579,22 +580,10 @@ function ExerciseCard({
                 completed ? "bg-orange-500/10" : ""
               }`}
             >
-              {/* Set number + delete stacked in a fixed-width column */}
-              <div className="w-8 shrink-0 flex flex-col items-center gap-0.5">
-                <span className="text-sm font-medium text-gray-400 leading-none">
-                  {setNumber}
-                </span>
-                {!sessionCompleted && (
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSet(setIndex, setNumber)}
-                    disabled={deleteSet.isPending}
-                    className="text-gray-600 hover:text-red-400 text-xs leading-none py-1 px-1 disabled:opacity-40"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
+              {/* Set number */}
+              <span className="w-6 shrink-0 text-sm font-medium text-gray-400 text-center">
+                {setNumber}
+              </span>
 
               {/* Steppers */}
               {isCardio ? (
@@ -634,6 +623,18 @@ function ExerciseCard({
               >
                 ✓
               </button>
+
+              {/* Delete set — large on mobile/tablet, smaller on desktop */}
+              {!sessionCompleted && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSet(setIndex, setNumber)}
+                  disabled={deleteSet.isPending}
+                  className="w-12 h-14 md:w-10 md:h-10 lg:w-8 lg:h-8 shrink-0 rounded-lg border border-red-500/40 text-red-500 text-xl md:text-base lg:text-sm hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           );
         })}
