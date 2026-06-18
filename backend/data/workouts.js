@@ -129,6 +129,18 @@ const workouts = [
     isPublic: false,
     isApproved: true,
   },
+  {
+    name: "estset",
+    difficultyLevel: "beginner",
+    isPublic: false,
+    isApproved: true,
+  },
+  {
+    name: "asdfdf",
+    difficultyLevel: "beginner",
+    isPublic: false,
+    isApproved: true,
+  },
 ];
 
 export default workouts;

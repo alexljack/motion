@@ -1,2 +1,21 @@
-- as the owner of a workout or exercise that i've previously created, i should be able to delete it.
+overall improvements:
+- mobile ui
 - not lose data when updating models and controllers
+
+workouts index:
+- as the owner of a workout or exercise that i've previously created, i should be able to delete it.
+
+exercise index:
+
+exercise form:
+
+logs index:
+
+logs form:
+
+sleep:
+- edit sleep entry
+
+nutrition:
+- edit meal entry
+- make meals only 1 of 4 options, breakfast, lunch, dinner or snacks.
