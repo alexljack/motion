@@ -13,6 +13,7 @@ import {
   useWatch,
 } from "react-hook-form";
 import { useListExercises } from "../../api/exercises/use-list-exercises";
+import ExerciseOptGroups from "../../ui/exercise-opt-groups";
 import type {
   PopulatedExercise,
   WorkoutExercise,
@@ -187,11 +188,7 @@ function ActiveLog() {
                     ? "Adding..."
                     : "+ Add exercise"}
               </option>
-              {availableExercises?.map((ex) => (
-                <option key={ex._id} value={ex._id} className="capitalize">
-                  {ex.name} · {ex.mainTargetMuscle}
-                </option>
-              ))}
+              {availableExercises && <ExerciseOptGroups exercises={availableExercises} />}
             </select>
           </div>
         )}

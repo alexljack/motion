@@ -8,7 +8,7 @@ workouts index:
 exercise index:
 
 exercise form:
-- add exercise to workout whilst creating it
+
 
 logs index:
 - delete logs from logs index

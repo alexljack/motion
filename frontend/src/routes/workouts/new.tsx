@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useListExercises } from "../../api/exercises/use-list-exercises";
 import { useAddExerciseToWorkout } from "../../api/workouts/use-add-exercise-to-workout";
 import { useCreateWorkout } from "../../api/workouts/use-create-workout";
+import ExerciseOptGroups from "../../ui/exercise-opt-groups";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
 
 export const Route = createFileRoute("/workouts/new")({
@@ -153,11 +154,7 @@ function NewWorkout() {
                 ? "— no more exercises —"
                 : "— add an exercise —"}
             </option>
-            {availableExercises?.map((ex) => (
-              <option key={ex._id} value={ex._id} className="capitalize">
-                {ex.name} · {ex.mainTargetMuscle}
-              </option>
-            ))}
+            {availableExercises && <ExerciseOptGroups exercises={availableExercises} />}
           </select>
 
           {selectedExercises.length > 0 && (

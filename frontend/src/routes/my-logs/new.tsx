@@ -6,6 +6,7 @@ import {
   useCreateWorkoutSession,
   useStartWorkoutSession,
 } from "../../api/workouts/use-workout-sessions";
+import ExerciseOptGroups from "../../ui/exercise-opt-groups";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
 
 export const Route = createFileRoute("/my-logs/new")({
@@ -158,11 +159,7 @@ function NewLog() {
                 ? "— all exercises added —"
                 : "— add an exercise —"}
             </option>
-            {availableExercises?.map((ex) => (
-              <option key={ex._id} value={ex._id} className="capitalize">
-                {ex.name} · {ex.mainTargetMuscle}
-              </option>
-            ))}
+            {availableExercises && <ExerciseOptGroups exercises={availableExercises} />}
           </select>
 
           {selectedExercises.length > 0 && (
