@@ -10,6 +10,7 @@ import {
   useFieldArray,
   useForm,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 import { useListExercises } from "../../api/exercises/use-list-exercises";
 import type {
@@ -69,7 +70,7 @@ function ActiveLog() {
   const methods = useForm<FormValues>({
     defaultValues: { exercises: [], rating: 3, feeling: "good", notes: "" },
   });
-  const { reset, handleSubmit, watch, setValue } = methods;
+  const { reset, handleSubmit } = methods;
 
   const initialized = useRef(false);
   useEffect(() => {
@@ -136,41 +137,16 @@ function ActiveLog() {
     (ex) => !addedExerciseIds.has(ex._id),
   );
 
-  const completedSets = session.exercises.reduce(
-    (total, ex) => total + (ex.sets?.filter((s) => s.completed).length || 0),
-    0,
-  );
   const totalSets = session.exercises.reduce(
     (total, ex) => total + (ex.sets?.length || 0),
     0,
   );
 
-  const rating = watch("rating");
-  const feeling = watch("feeling");
-
   return (
     <FormProvider {...methods}>
       <PageWrapper pageName={session.name}>
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-400 mb-1">
-            <span className="capitalize">{session.status}</span>
-            <span>
-              {completedSets} / {totalSets} sets
-            </span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-1.5">
-            <div
-              className="bg-orange-500 h-1.5 rounded-full transition-all"
-              style={{
-                width:
-                  totalSets > 0
-                    ? `${(completedSets / totalSets) * 100}%`
-                    : "0%",
-              }}
-            />
-          </div>
-        </div>
+        {/* Progress bar — completedSets counted from server state; updates after each sync */}
+        <ProgressBar session={session} totalSets={totalSets} />
 
         {/* Exercise list */}
         <div className="flex flex-col gap-6 mb-4">
@@ -242,89 +218,13 @@ function ActiveLog() {
           </div>
         )}
 
-        {/* Finish modal */}
+        {/* Modals — isolated so their watch() calls don't cause the page to re-render */}
         {showFinishModal && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-            <div className="bg-zinc-300 border rounded-lg p-6 w-full max-w-sm flex flex-col gap-4">
-              <h2 className="text-lg font-semibold">How was your workout?</h2>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Rating
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setValue("rating", n)}
-                      className={`flex-1 py-2 rounded border text-sm font-medium transition-colors ${
-                        rating === n
-                          ? "bg-orange-500 border-orange-500 text-black"
-                          : "border-white/20 hover:border-orange-400"
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Feeling
-                </label>
-                <div className="flex gap-1 flex-wrap">
-                  {(
-                    ["terrible", "bad", "okay", "good", "amazing"] as const
-                  ).map((f) => (
-                    <button
-                      key={f}
-                      type="button"
-                      onClick={() => setValue("feeling", f)}
-                      className={`px-3 py-1.5 rounded border text-sm capitalize transition-colors ${
-                        feeling === f
-                          ? "bg-orange-500 border-orange-500 text-black"
-                          : "border-white/20 hover:border-orange-400"
-                      }`}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Notes
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Any notes about this session..."
-                  className="w-full p-2 border rounded bg-transparent text-sm resize-none"
-                  {...methods.register("notes")}
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowFinishModal(false)}
-                  className="flex-1 py-2 border rounded text-sm hover:bg-white/5"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit(onFinish)}
-                  disabled={completeSession.isPending}
-                  className="flex-1 py-2 bg-orange-500 text-black font-semibold rounded text-sm hover:bg-orange-400 disabled:opacity-40"
-                >
-                  {completeSession.isPending ? "Saving..." : "Save & finish"}
-                </button>
-              </div>
-            </div>
-          </div>
+          <FinishModal
+            onClose={() => setShowFinishModal(false)}
+            onConfirm={handleSubmit(onFinish)}
+            isPending={completeSession.isPending}
+          />
         )}
         {showCancelModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
@@ -362,6 +262,131 @@ function ActiveLog() {
   );
 }
 
+// Isolated so watch() re-renders stay inside this component, not the full page
+function FinishModal({
+  onClose,
+  onConfirm,
+  isPending,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+  isPending: boolean;
+}) {
+  const { setValue } = useFormContext<FormValues>();
+  const rating = useWatch<FormValues, "rating">({ name: "rating" });
+  const feeling = useWatch<FormValues, "feeling">({ name: "feeling" });
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+      <div className="bg-zinc-300 border rounded-lg p-6 w-full max-w-sm flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">How was your workout?</h2>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">Rating</label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setValue("rating", n)}
+                className={`flex-1 py-2 rounded border text-sm font-medium transition-colors ${
+                  rating === n
+                    ? "bg-orange-500 border-orange-500 text-black"
+                    : "border-white/20 hover:border-orange-400"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">Feeling</label>
+          <div className="flex gap-1 flex-wrap">
+            {(["terrible", "bad", "okay", "good", "amazing"] as const).map(
+              (f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setValue("feeling", f)}
+                  className={`px-3 py-1.5 rounded border text-sm capitalize transition-colors ${
+                    feeling === f
+                      ? "bg-orange-500 border-orange-500 text-black"
+                      : "border-white/20 hover:border-orange-400"
+                  }`}
+                >
+                  {f}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">Notes</label>
+          <textarea
+            rows={3}
+            placeholder="Any notes about this session..."
+            className="w-full p-2 border rounded bg-transparent text-sm resize-none"
+            {...useFormContext<FormValues>().register("notes")}
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2 border rounded text-sm hover:bg-white/5"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isPending}
+            className="flex-1 py-2 bg-orange-500 text-black font-semibold rounded text-sm hover:bg-orange-400 disabled:opacity-40"
+          >
+            {isPending ? "Saving..." : "Save & finish"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgressBar({
+  session,
+  totalSets,
+}: {
+  session: { exercises: WorkoutExercise[]; status: string };
+  totalSets: number;
+}) {
+  const completedSets = session.exercises.reduce(
+    (total, ex) => total + (ex.sets?.filter((s) => s.completed).length || 0),
+    0,
+  );
+
+  return (
+    <div className="mb-6">
+      <div className="flex justify-between text-sm text-gray-400 mb-1">
+        <span className="capitalize">{session.status}</span>
+        <span>
+          {completedSets} / {totalSets} sets
+        </span>
+      </div>
+      <div className="w-full bg-white/10 rounded-full h-1.5">
+        <div
+          className="bg-orange-500 h-1.5 rounded-full transition-all"
+          style={{
+            width: totalSets > 0 ? `${(completedSets / totalSets) * 100}%` : "0%",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 type ExerciseCardProps = {
   exercise: WorkoutExercise;
   exerciseIndex: number;
@@ -394,7 +419,38 @@ function ExerciseCard({
     name: `exercises.${exerciseIndex}.sets`,
   });
 
-  async function handleAddSet() {
+  // Local completed state so toggles are instant — no waiting for server round-trip
+  const [completedStates, setCompletedStates] = useState<boolean[]>(
+    () => (exercise.sets ?? []).map((s) => s.completed),
+  );
+
+  // Re-sync when sets are structurally added or removed (server confirms)
+  const setsLength = exercise.sets?.length ?? 0;
+  useEffect(() => {
+    setCompletedStates((exercise.sets ?? []).map((s) => s.completed));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setsLength]);
+
+  function handleToggleCompleted(setIndex: number, setNumber: number, currentlyCompleted: boolean) {
+    const newCompleted = !currentlyCompleted;
+    setCompletedStates((prev) => {
+      const next = [...prev];
+      next[setIndex] = newCompleted;
+      return next;
+    });
+    // Fire-and-forget — UI already updated above
+    updateSet.mutateAsync({
+      sessionId,
+      exerciseIndex,
+      setData: {
+        setNumber,
+        ...getValues(`exercises.${exerciseIndex}.sets.${setIndex}`),
+        completed: newCompleted,
+      },
+    });
+  }
+
+  function handleAddSet() {
     const previousSet = exercise.sets?.[exercise.sets.length - 1];
     const newSetValues: SetValues = {
       reps: isCardio ? 0 : (previousSet?.reps ?? 10),
@@ -402,33 +458,16 @@ function ExerciseCard({
       durationInSeconds: isCardio ? (previousSet?.duration ?? 60) : 0,
     };
 
-    await updateSet.mutateAsync({
+    // Append immediately so the row appears without waiting for the server
+    append(newSetValues);
+
+    updateSet.mutateAsync({
       sessionId,
       exerciseIndex,
       setData: {
         setNumber: fields.length + 1,
         ...newSetValues,
         completed: false,
-      },
-    });
-
-    append(newSetValues);
-  }
-
-  async function handleToggleCompleted(
-    setIndex: number,
-    setNumber: number,
-    currentlyCompleted: boolean,
-  ) {
-    const values = getValues(`exercises.${exerciseIndex}.sets.${setIndex}`);
-
-    await updateSet.mutateAsync({
-      sessionId,
-      exerciseIndex,
-      setData: {
-        setNumber,
-        ...values,
-        completed: !currentlyCompleted,
       },
     });
   }
@@ -488,7 +527,7 @@ function ExerciseCard({
         {fields.map((field, setIndex) => {
           const serverSet = exercise.sets?.[setIndex];
           const setNumber = serverSet?.setNumber ?? setIndex + 1;
-          const completed = serverSet?.completed ?? false;
+          const completed = completedStates[setIndex] ?? false;
 
           return (
             <div
@@ -542,9 +581,7 @@ function ExerciseCard({
               <button
                 disabled={sessionCompleted}
                 type="button"
-                onClick={() =>
-                  handleToggleCompleted(setIndex, setNumber, completed)
-                }
+                onClick={() => handleToggleCompleted(setIndex, setNumber, completed)}
                 className={`w-7 h-7 rounded border text-xs font-bold transition-colors ${
                   completed
                     ? "bg-orange-500 border-orange-500 text-black"
