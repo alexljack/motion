@@ -125,6 +125,49 @@ const updateExerciseSet = asyncHandler(async (req, res) => {
   res.json(workoutSession);
 });
 
+// @desc Delete a set from an exercise in a workout session
+// @route DELETE /api/workout-sessions/:id/exercises/:exerciseIndex/sets/:setNumber
+// @access Private
+const deleteExerciseSet = asyncHandler(async (req, res) => {
+  const { exerciseIndex, setNumber } = req.params;
+
+  const workoutSession = await WorkoutSession.findById(req.params.id);
+
+  if (!workoutSession) {
+    res.status(404);
+    throw new Error("Workout session not found");
+  }
+
+  if (workoutSession.user.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("Not authorized to modify this workout");
+  }
+
+  const exerciseEntry = workoutSession.exercises[exerciseIndex];
+  if (!exerciseEntry) {
+    res.status(404);
+    throw new Error("Exercise not found in session");
+  }
+
+  const setIdx = exerciseEntry.sets.findIndex(
+    (s) => s.setNumber === Number(setNumber)
+  );
+  if (setIdx === -1) {
+    res.status(404);
+    throw new Error("Set not found");
+  }
+
+  exerciseEntry.sets.splice(setIdx, 1);
+  exerciseEntry.sets.forEach((s, i) => {
+    s.setNumber = i + 1;
+  });
+
+  await workoutSession.save();
+  await workoutSession.populate("exercises.exercise", "name category mainTargetMuscle");
+
+  res.json(workoutSession);
+});
+
 // @desc Add exercise to workout session
 // @route POST /api/workout-sessions/:id/exercises
 // @access Private
@@ -453,6 +496,7 @@ export {
   startWorkoutSession,
   completeWorkoutSession,
   updateExerciseSet,
+  deleteExerciseSet,
   addExerciseToSession,
   removeExerciseFromSession,
   getUserWorkoutSessions,

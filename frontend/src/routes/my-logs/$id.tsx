@@ -19,6 +19,7 @@ import type {
 import {
   useAddExerciseToSession,
   useCompleteWorkoutSession,
+  useDeleteExerciseSet,
   useDeleteWorkoutSession,
   useRemoveExerciseFromSession,
   useUpdateExerciseSet,
@@ -57,6 +58,7 @@ function ActiveLog() {
   const { data: session, isLoading, error } = useWorkoutSession(sessionId);
   const { data: allExercises } = useListExercises();
   const updateSet = useUpdateExerciseSet();
+  const deleteSet = useDeleteExerciseSet();
   const addExercise = useAddExerciseToSession();
   const removeExercise = useRemoveExerciseFromSession();
   const completeSession = useCompleteWorkoutSession();
@@ -180,6 +182,8 @@ function ActiveLog() {
               sessionId={sessionId}
               sessionCompleted={session.status === "completed"}
               updateSet={updateSet}
+              deleteSet={deleteSet}
+              initializedRef={initialized}
               onRemove={
                 session.status !== "completed"
                   ? () => handleRemoveExercise(exerciseIndex)
@@ -364,6 +368,8 @@ type ExerciseCardProps = {
   sessionId: string;
   sessionCompleted: boolean;
   updateSet: ReturnType<typeof useUpdateExerciseSet>;
+  deleteSet: ReturnType<typeof useDeleteExerciseSet>;
+  initializedRef: React.MutableRefObject<boolean>;
   onRemove?: () => void;
   isRemoving?: boolean;
 };
@@ -374,6 +380,8 @@ function ExerciseCard({
   sessionId,
   sessionCompleted,
   updateSet,
+  deleteSet,
+  initializedRef,
   onRemove,
   isRemoving,
 }: ExerciseCardProps) {
@@ -381,7 +389,7 @@ function ExerciseCard({
   const isCardio = exerciseData.category === "cardio";
 
   const { register, getValues, control } = useFormContext<FormValues>();
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: `exercises.${exerciseIndex}.sets`,
   });
@@ -425,6 +433,12 @@ function ExerciseCard({
     });
   }
 
+  async function handleDeleteSet(setIndex: number, setNumber: number) {
+    remove(setIndex);
+    initializedRef.current = false;
+    await deleteSet.mutateAsync({ sessionId, exerciseIndex, setNumber });
+  }
+
   return (
     <div className="border rounded p-4">
       <div className="flex items-start justify-between mb-3">
@@ -452,8 +466,8 @@ function ExerciseCard({
         className="grid text-xs text-gray-400 mb-1 px-1 gap-2"
         style={{
           gridTemplateColumns: isCardio
-            ? "1.5rem 1fr 2rem"
-            : "1.5rem 1fr 1fr 2rem",
+            ? "1.5rem 1fr 2rem 1.5rem"
+            : "1.5rem 1fr 1fr 2rem 1.5rem",
         }}
       >
         <span>#</span>
@@ -465,6 +479,7 @@ function ExerciseCard({
             <span>Weight (kg)</span>
           </>
         )}
+        <span />
         <span />
       </div>
 
@@ -483,8 +498,8 @@ function ExerciseCard({
               }`}
               style={{
                 gridTemplateColumns: isCardio
-                  ? "1.5rem 1fr 2rem"
-                  : "1.5rem 1fr 1fr 2rem",
+                  ? "1.5rem 1fr 2rem 1.5rem"
+                  : "1.5rem 1fr 1fr 2rem 1.5rem",
               }}
             >
               <span className="text-sm text-gray-400 text-center">
@@ -538,6 +553,18 @@ function ExerciseCard({
               >
                 ✓
               </button>
+
+              {!sessionCompleted && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSet(setIndex, setNumber)}
+                  disabled={deleteSet.isPending}
+                  className="text-gray-600 hover:text-red-400 text-base leading-none disabled:opacity-40"
+                >
+                  ×
+                </button>
+              )}
+              {sessionCompleted && <span />}
             </div>
           );
         })}

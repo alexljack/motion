@@ -126,6 +126,31 @@ export const useUpdateExerciseSet = () => {
   });
 };
 
+// Delete a set from an exercise in a workout session
+export const useDeleteExerciseSet = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      exerciseIndex,
+      setNumber,
+    }: {
+      sessionId: string;
+      exerciseIndex: number;
+      setNumber: number;
+    }) => {
+      const response = await axios.delete(
+        `/api/workout-sessions/${sessionId}/exercises/${exerciseIndex}/sets/${setNumber}`
+      );
+      return response.data as WorkoutSession;
+    },
+    onSuccess: (_, { sessionId }) => {
+      queryClient.invalidateQueries({ queryKey: ["workout-session", sessionId] });
+    },
+  });
+};
+
 // Add exercise to workout session
 export const useAddExerciseToSession = () => {
   const queryClient = useQueryClient();
