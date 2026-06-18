@@ -398,20 +398,20 @@ function SetStepper({
   const name = `exercises.${exerciseIndex}.sets.${setIndex}.${field}` as const;
 
   const [val, setVal] = useState(() => {
-    const stored = getValues(name as Parameters<typeof getValues>[0]);
+    const stored = getValues(name as unknown as Parameters<typeof getValues>[0]);
     return typeof stored === "number" ? stored : 0;
   });
 
   function dec() {
     const next = Math.max(min, parseFloat((val - step).toFixed(2)));
     setVal(next);
-    setValue(name as Parameters<typeof setValue>[0], next);
+    setValue(name as unknown as Parameters<typeof setValue>[0], next);
   }
 
   function inc() {
     const next = parseFloat((val + step).toFixed(2));
     setVal(next);
-    setValue(name as Parameters<typeof setValue>[0], next);
+    setValue(name as unknown as Parameters<typeof setValue>[0], next);
   }
 
   const display = Number.isInteger(val) ? String(val) : val.toFixed(1);
