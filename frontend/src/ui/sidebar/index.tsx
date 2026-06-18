@@ -1,17 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  DumbbellIcon,
-  WeightIcon,
-  SportShoeIcon,
-  ActivityIcon,
-  AppleIcon,
-  LayoutDashboardIcon,
-  ScaleIcon,
-  RulerIcon,
-} from "lucide-react";
-
 import cn from "../../utils/cn";
+import { navLinks } from "./links";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -21,34 +11,21 @@ const Sidebar = () => {
     collapsed ? "w-11" : "w-48",
   );
 
-  const links = [
-    { to: "/", label: "Home", icon: LayoutDashboardIcon },
-    { to: "/exercises", label: "Exercises", icon: DumbbellIcon },
-    { to: "/workouts", label: "Workouts", icon: WeightIcon },
-    { to: "/my-logs", label: "Logs", icon: SportShoeIcon },
-    { to: "/sleep", label: "Sleep", icon: ActivityIcon },
-    { to: "/nutrition", label: "Nutrition", icon: AppleIcon },
-    { to: "/weight", label: "Weight", icon: ScaleIcon },
-    { to: "/measurements", label: "Measurements", icon: RulerIcon },
-  ];
-
   return (
     <div
       className={cn(
-        "h-dvh bg-white py-2 px-2 flex flex-col transition-all duration-300",
+        "hidden lg:flex h-dvh bg-white py-2 px-2 flex-col transition-all duration-300",
         collapsed ? "w-16" : "w-52",
       )}
     >
       <div
-        className={cn(
-          "flex items-center justify-center bg-orange-600 text-white italic size-12 mb-6 text-2xl select-none",
-        )}
+        className="flex items-center justify-center bg-orange-600 text-white italic size-12 mb-6 text-2xl select-none cursor-pointer"
         onClick={() => setCollapsed(!collapsed)}
       >
         <span className="font-semibold">M</span>
       </div>
       <div className="h-full flex flex-col gap-2">
-        {links.map((link) => (
+        {navLinks.map((link) => (
           <div key={link.to} className={linkStyles}>
             <Link to={link.to} className="[&.active]:font-bold">
               {collapsed ? <link.icon /> : link.label}
