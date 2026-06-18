@@ -5,6 +5,8 @@ import {
   startWorkoutSession,
   completeWorkoutSession,
   updateExerciseSet,
+  addExerciseToSession,
+  removeExerciseFromSession,
   getUserWorkoutSessions,
   getWorkoutSessionById,
   deleteWorkoutSession,
@@ -25,6 +27,8 @@ router.route("/:id/start").put(startWorkoutSession);
 
 router.route("/:id/complete").put(completeWorkoutSession);
 
+router.route("/:id/exercises").post(addExerciseToSession);
+router.route("/:id/exercises/:exerciseIndex").delete(removeExerciseFromSession);
 router.route("/:id/exercises/:exerciseIndex/sets").put(updateExerciseSet);
 
 export default router;

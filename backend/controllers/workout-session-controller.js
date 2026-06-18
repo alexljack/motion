@@ -125,6 +125,61 @@ const updateExerciseSet = asyncHandler(async (req, res) => {
   res.json(workoutSession);
 });
 
+// @desc Add exercise to workout session
+// @route POST /api/workout-sessions/:id/exercises
+// @access Private
+const addExerciseToSession = asyncHandler(async (req, res) => {
+  const { exerciseId } = req.body;
+
+  const workoutSession = await WorkoutSession.findById(req.params.id);
+
+  if (!workoutSession) {
+    res.status(404);
+    throw new Error("Workout session not found");
+  }
+
+  if (workoutSession.user.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("Not authorized to modify this workout");
+  }
+
+  workoutSession.exercises.push({ exercise: exerciseId, sets: [] });
+  await workoutSession.save();
+  await workoutSession.populate("exercises.exercise", "name category mainTargetMuscle");
+
+  res.json(workoutSession);
+});
+
+// @desc Remove exercise from workout session
+// @route DELETE /api/workout-sessions/:id/exercises/:exerciseIndex
+// @access Private
+const removeExerciseFromSession = asyncHandler(async (req, res) => {
+  const { exerciseIndex } = req.params;
+
+  const workoutSession = await WorkoutSession.findById(req.params.id);
+
+  if (!workoutSession) {
+    res.status(404);
+    throw new Error("Workout session not found");
+  }
+
+  if (workoutSession.user.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("Not authorized to modify this workout");
+  }
+
+  if (!workoutSession.exercises[exerciseIndex]) {
+    res.status(404);
+    throw new Error("Exercise not found in session");
+  }
+
+  workoutSession.exercises.splice(Number(exerciseIndex), 1);
+  await workoutSession.save();
+  await workoutSession.populate("exercises.exercise", "name category mainTargetMuscle");
+
+  res.json(workoutSession);
+});
+
 // @desc Get user's workout sessions
 // @route GET /api/workout-sessions
 // @access Private
@@ -398,6 +453,8 @@ export {
   startWorkoutSession,
   completeWorkoutSession,
   updateExerciseSet,
+  addExerciseToSession,
+  removeExerciseFromSession,
   getUserWorkoutSessions,
   getWorkoutSessionById,
   deleteWorkoutSession,

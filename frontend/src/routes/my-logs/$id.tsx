@@ -11,17 +11,20 @@ import {
   useForm,
   useFormContext,
 } from "react-hook-form";
-import {
-  useCompleteWorkoutSession,
-  useDeleteWorkoutSession,
-  useUpdateExerciseSet,
-  useWorkoutSession,
-} from "../../api/workouts/use-workout-sessions";
-import PageWrapper from "../../ui/page-wrapper/page-wrapper";
+import { useListExercises } from "../../api/exercises/use-list-exercises";
 import type {
   PopulatedExercise,
   WorkoutExercise,
 } from "../../api/workout-types";
+import {
+  useAddExerciseToSession,
+  useCompleteWorkoutSession,
+  useDeleteWorkoutSession,
+  useRemoveExerciseFromSession,
+  useUpdateExerciseSet,
+  useWorkoutSession,
+} from "../../api/workouts/use-workout-sessions";
+import PageWrapper from "../../ui/page-wrapper/page-wrapper";
 
 type SetValues = {
   reps: number;
@@ -52,7 +55,10 @@ function ActiveLog() {
   const sessionId = id ?? "";
 
   const { data: session, isLoading, error } = useWorkoutSession(sessionId);
+  const { data: allExercises } = useListExercises();
   const updateSet = useUpdateExerciseSet();
+  const addExercise = useAddExerciseToSession();
+  const removeExercise = useRemoveExerciseFromSession();
   const completeSession = useCompleteWorkoutSession();
   const deleteSession = useDeleteWorkoutSession();
   const [showFinishModal, setShowFinishModal] = useState(false);
@@ -82,6 +88,17 @@ function ActiveLog() {
     }
   }, [session, reset]);
 
+  async function handleAddExercise(exerciseId: string) {
+    if (!exerciseId) return;
+    initialized.current = false;
+    await addExercise.mutateAsync({ sessionId, exerciseId });
+  }
+
+  async function handleRemoveExercise(exerciseIndex: number) {
+    initialized.current = false;
+    await removeExercise.mutateAsync({ sessionId, exerciseIndex });
+  }
+
   async function onFinish(data: FormValues) {
     await completeSession.mutateAsync({
       id: sessionId,
@@ -109,6 +126,13 @@ function ActiveLog() {
       </PageWrapper>
     );
   }
+
+  const addedExerciseIds = new Set(
+    session.exercises.map((ex) => (ex.exercise as PopulatedExercise)._id),
+  );
+  const availableExercises = allExercises?.filter(
+    (ex) => !addedExerciseIds.has(ex._id),
+  );
 
   const completedSets = session.exercises.reduce(
     (total, ex) => total + (ex.sets?.filter((s) => s.completed).length || 0),
@@ -147,7 +171,7 @@ function ActiveLog() {
         </div>
 
         {/* Exercise list */}
-        <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col gap-6 mb-4">
           {session.exercises.map((exercise, exerciseIndex) => (
             <ExerciseCard
               key={(exercise.exercise as PopulatedExercise)._id + exerciseIndex}
@@ -156,9 +180,44 @@ function ActiveLog() {
               sessionId={sessionId}
               sessionCompleted={session.status === "completed"}
               updateSet={updateSet}
+              onRemove={
+                session.status !== "completed"
+                  ? () => handleRemoveExercise(exerciseIndex)
+                  : undefined
+              }
+              isRemoving={removeExercise.isPending}
             />
           ))}
         </div>
+
+        {/* Add exercise picker */}
+        {session.status !== "completed" && (
+          <div className="mb-8">
+            <select
+              value=""
+              onChange={(e) => handleAddExercise(e.target.value)}
+              disabled={
+                addExercise.isPending ||
+                !availableExercises ||
+                availableExercises.length === 0
+              }
+              className="w-full p-2 border border-dashed rounded bg-transparent text-sm text-gray-400 capitalize hover:border-orange-400 transition-colors disabled:opacity-40"
+            >
+              <option value="">
+                {!availableExercises || availableExercises.length === 0
+                  ? "— all exercises added —"
+                  : addExercise.isPending
+                    ? "Adding..."
+                    : "+ Add exercise"}
+              </option>
+              {availableExercises?.map((ex) => (
+                <option key={ex._id} value={ex._id} className="capitalize">
+                  {ex.name} · {ex.mainTargetMuscle}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {session.status !== "completed" && (
           <div className="flex flex-col gap-3">
@@ -305,6 +364,8 @@ type ExerciseCardProps = {
   sessionId: string;
   sessionCompleted: boolean;
   updateSet: ReturnType<typeof useUpdateExerciseSet>;
+  onRemove?: () => void;
+  isRemoving?: boolean;
 };
 
 function ExerciseCard({
@@ -313,6 +374,8 @@ function ExerciseCard({
   sessionId,
   sessionCompleted,
   updateSet,
+  onRemove,
+  isRemoving,
 }: ExerciseCardProps) {
   const exerciseData = exercise.exercise as PopulatedExercise;
   const isCardio = exerciseData.category === "cardio";
@@ -364,11 +427,24 @@ function ExerciseCard({
 
   return (
     <div className="border rounded p-4">
-      <div className="mb-3">
-        <h3 className="font-semibold capitalize">{exerciseData.name}</h3>
-        <p className="text-xs text-gray-400 capitalize">
-          {exerciseData.mainTargetMuscle}
-        </p>
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h3 className="font-semibold capitalize">{exerciseData.name}</h3>
+          <p className="text-xs text-gray-400 capitalize">
+            {exerciseData.mainTargetMuscle}
+          </p>
+        </div>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            disabled={isRemoving}
+            className="text-gray-400 hover:text-red-400 text-lg leading-none ml-2 disabled:opacity-40"
+            title="Remove exercise"
+          >
+            ×
+          </button>
+        )}
       </div>
 
       {/* Column headers */}
