@@ -386,48 +386,73 @@ function SetStepper({
   setIndex,
   field,
   step,
+  steps,
   min = 0,
 }: {
   exerciseIndex: number;
   setIndex: number;
   field: keyof SetValues;
   step: number;
+  steps?: number[];
   min?: number;
 }) {
+  const [activeStep, setActiveStep] = useState(step);
   const { setValue } = useFormContext<FormValues>();
   const name = `exercises.${exerciseIndex}.sets.${setIndex}.${field}` as const;
   // useWatch instead of local state so mobile + desktop layouts stay in sync
   const val: number = (useWatch({ name: name as any }) as number) ?? 0;
 
+  const currentStep = steps ? activeStep : step;
+
   function dec() {
-    setValue(name as unknown as Parameters<typeof setValue>[0], Math.max(min, parseFloat((val - step).toFixed(2))));
+    setValue(name as unknown as Parameters<typeof setValue>[0], Math.max(min, parseFloat((val - currentStep).toFixed(2))));
   }
 
   function inc() {
-    setValue(name as unknown as Parameters<typeof setValue>[0], parseFloat((val + step).toFixed(2)));
+    setValue(name as unknown as Parameters<typeof setValue>[0], parseFloat((val + currentStep).toFixed(2)));
   }
 
   const display = Number.isInteger(val) ? String(val) : val.toFixed(1);
 
   return (
-    <div className="flex-1 flex items-center border rounded-lg h-14 overflow-hidden">
-      <button
-        type="button"
-        onClick={dec}
-        className="w-11 h-full border-r flex items-center justify-center text-2xl text-gray-400 active:bg-white/10 select-none shrink-0"
-      >
-        −
-      </button>
-      <span className="flex-1 text-center font-semibold text-base select-none tabular-nums">
-        {display}
-      </span>
-      <button
-        type="button"
-        onClick={inc}
-        className="w-11 h-full border-l flex items-center justify-center text-2xl text-gray-400 active:bg-white/10 select-none shrink-0"
-      >
-        +
-      </button>
+    <div className="flex-1 flex flex-col gap-1">
+      <div className="flex items-center border rounded-lg h-14 overflow-hidden">
+        <button
+          type="button"
+          onClick={dec}
+          className="w-11 h-full border-r flex items-center justify-center text-2xl text-gray-400 active:bg-white/10 select-none shrink-0"
+        >
+          −
+        </button>
+        <span className="flex-1 text-center font-semibold text-base select-none tabular-nums">
+          {display}
+        </span>
+        <button
+          type="button"
+          onClick={inc}
+          className="w-11 h-full border-l flex items-center justify-center text-2xl text-gray-400 active:bg-white/10 select-none shrink-0"
+        >
+          +
+        </button>
+      </div>
+      {steps && (
+        <div className="flex gap-1">
+          {steps.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setActiveStep(s)}
+              className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
+                activeStep === s
+                  ? "bg-orange-500 text-black"
+                  : "border border-white/20 text-gray-400 hover:border-orange-400"
+              }`}
+            >
+              {Number.isInteger(s) ? s : s.toFixed(1)}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -495,7 +520,7 @@ function ExerciseCard({
   function handleAddSet() {
     const previousSet = exercise.sets?.[exercise.sets.length - 1];
     const newSetValues: SetValues = {
-      reps: isCardio ? 0 : (previousSet?.reps ?? 10),
+      reps: isCardio ? 0 : (previousSet?.reps ?? 5),
       weight: isCardio ? 0 : (previousSet?.weight ?? 0),
       durationInSeconds: isCardio ? (previousSet?.duration ?? 60) : 0,
     };
@@ -604,7 +629,7 @@ function ExerciseCard({
                       </div>
                       <div className="flex flex-col gap-1">
                         <span className="text-xs text-gray-400 text-center">kg</span>
-                        <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} />
+                        <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} steps={[1, 2.5, 5, 10]} />
                       </div>
                     </>
                   )}
@@ -639,7 +664,7 @@ function ExerciseCard({
                 ) : (
                   <>
                     <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="reps" step={1} />
-                    <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} />
+                    <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} steps={[1, 2.5, 5, 10]} />
                   </>
                 )}
 

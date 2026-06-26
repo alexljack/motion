@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import colors from "colors";
 import dotenv from "dotenv";
-dotenv.config({ path: ".env.development" });
+dotenv.config({ path: "../.env.development" });
 
 import users from "./data/users.js";
 import exercises from "./data/exercises.js";
@@ -94,8 +94,34 @@ const destroyData = async () => {
   }
 };
 
+const upsertExercises = async () => {
+  try {
+    let inserted = 0;
+    let skipped = 0;
+    for (const exercise of exercises) {
+      const result = await Exercise.updateOne(
+        { name: exercise.name },
+        { $setOnInsert: exercise },
+        { upsert: true }
+      );
+      if (result.upsertedCount > 0) {
+        inserted++;
+      } else {
+        skipped++;
+      }
+    }
+    console.log(`Exercises seeded: ${inserted} inserted, ${skipped} already existed.`.green.inverse);
+    process.exit();
+  } catch (error) {
+    console.error(`${error}`.red.inverse);
+    process.exit(1);
+  }
+};
+
 if (process.argv[2] === "--destroy") {
   destroyData();
+} else if (process.argv[2] === "--exercises-only") {
+  upsertExercises();
 } else {
   importData();
 }
