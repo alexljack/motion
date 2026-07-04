@@ -188,7 +188,9 @@ function ActiveLog() {
                     ? "Adding..."
                     : "+ Add exercise"}
               </option>
-              {availableExercises && <ExerciseOptGroups exercises={availableExercises} />}
+              {availableExercises && (
+                <ExerciseOptGroups exercises={availableExercises} />
+              )}
             </select>
           </div>
         )}
@@ -372,7 +374,8 @@ function ProgressBar({
         <div
           className="bg-orange-500 h-2 rounded-full transition-all"
           style={{
-            width: totalSets > 0 ? `${(completedSets / totalSets) * 100}%` : "0%",
+            width:
+              totalSets > 0 ? `${(completedSets / totalSets) * 100}%` : "0%",
           }}
         />
       </div>
@@ -400,16 +403,22 @@ function SetStepper({
   const { setValue } = useFormContext<FormValues>();
   const name = `exercises.${exerciseIndex}.sets.${setIndex}.${field}` as const;
   // useWatch instead of local state so mobile + desktop layouts stay in sync
-  const val: number = (useWatch({ name: name as any }) as number) ?? 0;
+  const val: number = (useWatch({ name: name as string }) as number) ?? 0;
 
   const currentStep = steps ? activeStep : step;
 
   function dec() {
-    setValue(name as unknown as Parameters<typeof setValue>[0], Math.max(min, parseFloat((val - currentStep).toFixed(2))));
+    setValue(
+      name as unknown as Parameters<typeof setValue>[0],
+      Math.max(min, parseFloat((val - currentStep).toFixed(2))),
+    );
   }
 
   function inc() {
-    setValue(name as unknown as Parameters<typeof setValue>[0], parseFloat((val + currentStep).toFixed(2)));
+    setValue(
+      name as unknown as Parameters<typeof setValue>[0],
+      parseFloat((val + currentStep).toFixed(2)),
+    );
   }
 
   const display = Number.isInteger(val) ? String(val) : val.toFixed(1);
@@ -445,7 +454,7 @@ function SetStepper({
               className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
                 activeStep === s
                   ? "bg-orange-500 text-black"
-                  : "border border-white/20 text-gray-400 hover:border-orange-400"
+                  : "border border-black text-gray-400 hover:border-orange-400"
               }`}
             >
               {Number.isInteger(s) ? s : s.toFixed(1)}
@@ -489,8 +498,9 @@ function ExerciseCard({
     name: `exercises.${exerciseIndex}.sets`,
   });
 
-  const [completedStates, setCompletedStates] = useState<boolean[]>(
-    () => (exercise.sets ?? []).map((s) => s.completed),
+  const [collapsed, setCollapsed] = useState(true);
+  const [completedStates, setCompletedStates] = useState<boolean[]>(() =>
+    (exercise.sets ?? []).map((s) => s.completed),
   );
 
   const setsLength = exercise.sets?.length ?? 0;
@@ -499,7 +509,11 @@ function ExerciseCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setsLength]);
 
-  function handleToggleCompleted(setIndex: number, setNumber: number, currentlyCompleted: boolean) {
+  function handleToggleCompleted(
+    setIndex: number,
+    setNumber: number,
+    currentlyCompleted: boolean,
+  ) {
     const newCompleted = !currentlyCompleted;
     setCompletedStates((prev) => {
       const next = [...prev];
@@ -544,22 +558,48 @@ function ExerciseCard({
     await deleteSet.mutateAsync({ sessionId, exerciseIndex, setNumber });
   }
 
+  const allSetsCompleted =
+    completedStates.length > 0 && completedStates.every(Boolean);
+
   return (
     <div className="border rounded-lg p-4">
       {/* Exercise header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="font-semibold text-base capitalize">{exerciseData.name}</h3>
-          <p className="text-xs text-gray-400 capitalize mt-0.5">
-            {exerciseData.mainTargetMuscle}
-          </p>
-        </div>
-        {onRemove && (
+      <div
+        className={`flex items-center justify-between transition-all duration-150 ${collapsed ? "" : "mb-4"}`}
+      >
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex-1 flex items-center gap-2 text-left min-w-0"
+        >
+          <span
+            className={`text-gray-400 text-xs transition-transform duration-200 shrink-0 ${collapsed ? "-rotate-90" : "rotate-0"}`}
+          >
+            ▼
+          </span>
+          <div className="min-w-0">
+            <h3
+              className={`font-semibold text-base capitalize truncate ${allSetsCompleted ? "text-orange-400" : ""}`}
+            >
+              {exerciseData.name}
+            </h3>
+            <p className="text-xs text-gray-400 capitalize mt-0.5">
+              {exerciseData.mainTargetMuscle}
+              {collapsed && completedStates.length > 0 && (
+                <span className="ml-2">
+                  · {completedStates.filter(Boolean).length}/
+                  {completedStates.length} sets
+                </span>
+              )}
+            </p>
+          </div>
+        </button>
+        {onRemove && !collapsed && (
           <button
             type="button"
             onClick={onRemove}
             disabled={isRemoving}
-            className="ml-3 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-red-400 text-2xl disabled:opacity-40"
+            className="ml-3 w-10 h-10 flex items-center  lg:items-start justify-center text-gray-400 hover:text-red-400 text-2xl disabled:opacity-40 shrink-0"
             title="Remove exercise"
           >
             ×
@@ -567,145 +607,199 @@ function ExerciseCard({
         )}
       </div>
 
-      {/* Column labels — desktop only (mobile cards have inline labels) */}
-      {fields.length > 0 && (
-        <div className="hidden lg:flex items-center gap-2 mb-2 px-1">
-          <span className="w-6 shrink-0" />
-          {isCardio ? (
-            <span className="flex-1 text-xs text-gray-400 text-center">Duration (s)</span>
-          ) : (
-            <>
-              <span className="flex-1 text-xs text-gray-400 text-center">Reps</span>
-              <span className="flex-1 text-xs text-gray-400 text-center">kg</span>
-            </>
-          )}
-          <span className="w-14 shrink-0" />
-          {!sessionCompleted && <span className="w-8 shrink-0" />}
-        </div>
-      )}
-
-      {/* Set rows */}
-      <div className="flex flex-col gap-2 mb-3">
-        {fields.map((field, setIndex) => {
-          const serverSet = exercise.sets?.[setIndex];
-          const setNumber = serverSet?.setNumber ?? setIndex + 1;
-          const completed = completedStates[setIndex] ?? false;
-
-          return (
-            <div key={field.id}>
-              {/* ── Mobile card layout ── */}
-              <div
-                className={`lg:hidden p-3 border rounded-lg flex flex-col gap-3 transition-colors ${
-                  completed ? "bg-orange-500/10 border-orange-500/30" : ""
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-400">
-                    Set {setNumber}
-                  </span>
-                  {!sessionCompleted && (
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteSet(setIndex, setNumber)}
-                      disabled={deleteSet.isPending}
-                      className="w-10 h-10 rounded-lg border border-red-500/40 text-red-500 text-lg hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  {isCardio ? (
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-gray-400 text-center">Duration (s)</span>
-                      <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="durationInSeconds" step={5} />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400 text-center">Reps</span>
-                        <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="reps" step={1} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400 text-center">kg</span>
-                        <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} steps={[1, 2.5, 5, 10]} />
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <button
-                  disabled={sessionCompleted}
-                  type="button"
-                  onClick={() => handleToggleCompleted(setIndex, setNumber, completed)}
-                  className={`w-full h-14 rounded-lg border-2 font-bold transition-colors ${
-                    completed
-                      ? "bg-orange-500 border-orange-500 text-black"
-                      : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
-                  }`}
-                >
-                  ✓
-                </button>
-              </div>
-
-              {/* ── Desktop row layout ── */}
-              <div
-                className={`hidden lg:flex items-center gap-2 px-1 py-1 rounded-lg transition-colors ${
-                  completed ? "bg-orange-500/10" : ""
-                }`}
-              >
-                <span className="w-6 shrink-0 text-sm font-medium text-gray-400 text-center">
-                  {setNumber}
+      {!collapsed && (
+        <>
+          {/* Column labels — desktop only (mobile cards have inline labels) */}
+          {fields.length > 0 && (
+            <div className="hidden lg:flex items-center gap-2 mb-2 px-1">
+              <span className="w-6 shrink-0" />
+              {isCardio ? (
+                <span className="flex-1 text-xs text-gray-400 text-center">
+                  Duration (s)
                 </span>
-
-                {isCardio ? (
-                  <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="durationInSeconds" step={5} />
-                ) : (
-                  <>
-                    <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="reps" step={1} />
-                    <SetStepper exerciseIndex={exerciseIndex} setIndex={setIndex} field="weight" step={2.5} steps={[1, 2.5, 5, 10]} />
-                  </>
-                )}
-
-                <button
-                  disabled={sessionCompleted}
-                  type="button"
-                  onClick={() => handleToggleCompleted(setIndex, setNumber, completed)}
-                  className={`w-14 h-14 shrink-0 rounded-lg border-2 text-sm font-bold transition-colors ${
-                    completed
-                      ? "bg-orange-500 border-orange-500 text-black"
-                      : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
-                  }`}
-                >
-                  ✓
-                </button>
-
-                {!sessionCompleted && (
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSet(setIndex, setNumber)}
-                    disabled={deleteSet.isPending}
-                    className="w-8 h-8 shrink-0 rounded-lg border border-red-500/40 text-red-500 text-sm hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
+              ) : (
+                <>
+                  <span className="flex-1 text-xs text-gray-400 text-center">
+                    Reps
+                  </span>
+                  <span className="flex-1 text-xs text-gray-400 text-center">
+                    kg
+                  </span>
+                </>
+              )}
+              <span className="w-14 shrink-0" />
+              {!sessionCompleted && <span className="w-8 shrink-0" />}
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      {!sessionCompleted && (
-        <button
-          type="button"
-          onClick={handleAddSet}
-          disabled={updateSet.isPending}
-          className="w-full h-14 border-2 border-dashed rounded-lg text-gray-400 hover:text-white hover:border-orange-400 font-medium transition-colors disabled:opacity-40"
-        >
-          + Add set
-        </button>
+          {/* Set rows */}
+          <div className="flex flex-col gap-2 mb-3">
+            {fields.map((field, setIndex) => {
+              const serverSet = exercise.sets?.[setIndex];
+              const setNumber = serverSet?.setNumber ?? setIndex + 1;
+              const completed = completedStates[setIndex] ?? false;
+
+              return (
+                <div key={field.id}>
+                  {/* ── Mobile card layout ── */}
+                  <div
+                    className={`lg:hidden p-3 border rounded-lg flex flex-col gap-3 transition-colors ${
+                      completed ? "bg-orange-500/10 border-orange-500/30" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-400">
+                        Set {setNumber}
+                      </span>
+                      {!sessionCompleted && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSet(setIndex, setNumber)}
+                          disabled={deleteSet.isPending}
+                          className="w-10 h-10 rounded-lg border border-red-500/40 text-red-500 text-lg hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      {isCardio ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-gray-400 text-center">
+                            Duration (s)
+                          </span>
+                          <SetStepper
+                            exerciseIndex={exerciseIndex}
+                            setIndex={setIndex}
+                            field="durationInSeconds"
+                            step={5}
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 text-center">
+                              Reps
+                            </span>
+                            <SetStepper
+                              exerciseIndex={exerciseIndex}
+                              setIndex={setIndex}
+                              field="reps"
+                              step={1}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 text-center">
+                              kg
+                            </span>
+                            <SetStepper
+                              exerciseIndex={exerciseIndex}
+                              setIndex={setIndex}
+                              field="weight"
+                              step={2.5}
+                              steps={[1, 2.5, 5, 10]}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <button
+                      disabled={sessionCompleted}
+                      type="button"
+                      onClick={() =>
+                        handleToggleCompleted(setIndex, setNumber, completed)
+                      }
+                      className={`w-full h-14 rounded-lg border-2 font-bold transition-colors ${
+                        completed
+                          ? "bg-orange-500 border-orange-500 text-black"
+                          : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
+                      }`}
+                    >
+                      ✓
+                    </button>
+                  </div>
+
+                  {/* ── Desktop row layout ── */}
+                  <div
+                    className={`hidden lg:flex items-center md:items-start gap-2 px-1 py-1 rounded-lg transition-colors ${
+                      completed ? "bg-orange-500/10" : ""
+                    }`}
+                  >
+                    <span className="w-6 shrink-0 text-sm font-medium text-gray-400 text-center">
+                      {setNumber}
+                    </span>
+
+                    {isCardio ? (
+                      <SetStepper
+                        exerciseIndex={exerciseIndex}
+                        setIndex={setIndex}
+                        field="durationInSeconds"
+                        step={5}
+                      />
+                    ) : (
+                      <>
+                        <SetStepper
+                          exerciseIndex={exerciseIndex}
+                          setIndex={setIndex}
+                          field="reps"
+                          step={1}
+                        />
+                        <SetStepper
+                          exerciseIndex={exerciseIndex}
+                          setIndex={setIndex}
+                          field="weight"
+                          step={2.5}
+                          steps={[1, 2.5, 5, 10]}
+                        />
+                      </>
+                    )}
+
+                    <div className="flex gap-1 items-center justify-center h-full">
+                      <button
+                        disabled={sessionCompleted}
+                        type="button"
+                        onClick={() =>
+                          handleToggleCompleted(setIndex, setNumber, completed)
+                        }
+                        className={`w-14 h-14 shrink-0 rounded-lg border-2 text-sm font-bold transition-colors ${
+                          completed
+                            ? "bg-orange-500 border-orange-500 text-black"
+                            : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
+                        }`}
+                      >
+                        ✓
+                      </button>
+
+                      {!sessionCompleted && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSet(setIndex, setNumber)}
+                          disabled={deleteSet.isPending}
+                          className="w-8 h-8 shrink-0 rounded-lg border border-red-500/40 text-red-500 text-sm hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {!sessionCompleted && (
+            <button
+              type="button"
+              onClick={handleAddSet}
+              disabled={updateSet.isPending}
+              className="w-full h-14 border-2 border-dashed rounded-lg text-gray-400 hover:text-white hover:border-orange-400 font-medium transition-colors disabled:opacity-40"
+            >
+              + Add set
+            </button>
+          )}
+        </>
       )}
     </div>
   );
