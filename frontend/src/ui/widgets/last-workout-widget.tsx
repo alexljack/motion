@@ -14,7 +14,11 @@ function timeAgo(date: string) {
 }
 
 export function LastWorkoutWidget() {
-  const { data, isLoading } = useWorkoutSessions({ status: "completed", limit: 1 });
+  const { data, isLoading } = useWorkoutSessions({
+    status: "completed",
+    limit: 1,
+    count: "false",
+  });
   const session = data?.workoutSessions?.[0];
 
   return (

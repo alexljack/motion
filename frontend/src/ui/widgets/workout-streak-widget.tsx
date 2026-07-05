@@ -15,7 +15,12 @@ function computeStreak(sessions: { completedAt: string }[]) {
 }
 
 export function WorkoutStreakWidget() {
-  const { data, isLoading } = useWorkoutSessions({ status: "completed", limit: 90 });
+  const { data, isLoading } = useWorkoutSessions({
+    status: "completed",
+    limit: 90,
+    populate: "false",
+    count: "false",
+  });
   const sessions = data?.workoutSessions ?? [];
   const streak = computeStreak(sessions);
 

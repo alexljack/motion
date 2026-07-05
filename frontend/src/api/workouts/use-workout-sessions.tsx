@@ -10,6 +10,8 @@ export const useWorkoutSessions = (params?: {
   page?: number;
   startDate?: string;
   endDate?: string;
+  populate?: "true" | "false";
+  count?: "true" | "false";
 }) => {
   return useQuery({
     queryKey: ["workout-sessions", params],

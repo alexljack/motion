@@ -227,7 +227,15 @@ const removeExerciseFromSession = asyncHandler(async (req, res) => {
 // @route GET /api/workout-sessions
 // @access Private
 const getUserWorkoutSessions = asyncHandler(async (req, res) => {
-  const { status, limit = 20, page = 1, startDate, endDate } = req.query;
+  const {
+    status,
+    limit = 20,
+    page = 1,
+    startDate,
+    endDate,
+    populate = "true",
+    count = "true",
+  } = req.query;
 
   const query = { user: req.user._id };
 
@@ -241,20 +249,27 @@ const getUserWorkoutSessions = asyncHandler(async (req, res) => {
     if (endDate) query.createdAt.$lte = new Date(endDate);
   }
 
-  const workoutSessions = await WorkoutSession.find(query)
-    .populate("exercises.exercise", "name category mainTargetMuscle")
-    .populate("workoutTemplate", "name")
+  let q = WorkoutSession.find(query)
     .sort({ createdAt: -1 })
     .limit(limit * 1)
     .skip((page - 1) * limit);
 
-  const total = await WorkoutSession.countDocuments(query);
+  if (populate !== "false") {
+    q = q
+      .populate("exercises.exercise", "name category mainTargetMuscle")
+      .populate("workoutTemplate", "name");
+  }
+
+  const workoutSessions = await q;
+
+  const total =
+    count !== "false" ? await WorkoutSession.countDocuments(query) : null;
 
   res.json({
     workoutSessions,
     pagination: {
       currentPage: page,
-      totalPages: Math.ceil(total / limit),
+      totalPages: total !== null ? Math.ceil(total / limit) : null,
       totalWorkouts: total,
     },
   });
