@@ -35,12 +35,12 @@ const TopBar = ({ onMenuOpen }: TopBarProps) => {
       </button>
 
       <div className="flex-1 flex justify-end gap-2">
-        <button className={buttonStyles} disabled>
+        {/* <button className={buttonStyles} disabled>
           Notifications
-        </button>
-        <button className={buttonStyles} disabled>
+        </button> */}
+        {/* <button className={buttonStyles} disabled>
           Language
-        </button>
+        </button> */}
         <Link to="/profile">
           <button className={buttonStyles}>
             <UserIcon />
