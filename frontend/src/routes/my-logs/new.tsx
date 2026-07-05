@@ -38,7 +38,9 @@ function NewLog() {
 
   const [sessionName, setSessionName] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
-  const [selectedExercises, setSelectedExercises] = useState<SessionExercise[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<SessionExercise[]>(
+    [],
+  );
 
   function handleTemplateChange(templateId: string) {
     setSelectedTemplateId(templateId);
@@ -159,7 +161,9 @@ function NewLog() {
                 ? "— all exercises added —"
                 : "— add an exercise —"}
             </option>
-            {availableExercises && <ExerciseOptGroups exercises={availableExercises} />}
+            {availableExercises && (
+              <ExerciseOptGroups exercises={availableExercises} />
+            )}
           </select>
 
           {selectedExercises.length > 0 && (

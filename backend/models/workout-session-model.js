@@ -81,8 +81,8 @@ const workoutSessionSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-workoutSessionSchema.index({ user: 1, createdAt: -1 });
-workoutSessionSchema.index({ user: 1, status: 1 });
+workoutSessionSchema.index({ user: 1, status: 1, createdAt: -1 }); // covers filtered + sorted list queries
+workoutSessionSchema.index({ user: 1, createdAt: -1 });             // covers unfiltered list queries
 workoutSessionSchema.index({ user: 1, "exercises.exercise": 1 });
 
 // Calculate workout metrics before saving

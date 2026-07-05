@@ -10,6 +10,7 @@ import useListLogs, {
 } from "../../api/logged-workouts/use-list-logs";
 import { useDeleteLog } from "../../api/logged-workouts/use-delete-log";
 import PageWrapper from "../../ui/page-wrapper/page-wrapper";
+import cn from "../../utils/cn";
 
 export const Route = createFileRoute("/my-logs/")({
   beforeLoad: async () => {
@@ -66,15 +67,47 @@ function formatDate(dateStr: string) {
   });
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({
+  className,
+  status,
+}: {
+  className?: string;
+  status: string;
+}) {
   const colours: Record<string, string> = {
-    completed: "bg-green-800 text-green-300",
-    "in-progress": "bg-yellow-800 text-yellow-300",
+    completed: "bg-green-600 text-white",
+    "in-progress": "bg-orange-500 text-white",
     planned: "bg-gray-700 text-gray-300",
   };
   const cls = colours[status] ?? "bg-gray-700 text-gray-300";
   return (
-    <span className={`text-xs px-1.5 py-0.5 rounded ${cls}`}>{status}</span>
+    <span className={cn(`text-xs px-1.5 py-0.5 rounded ${cls}`, className)}>
+      {status}
+    </span>
+  );
+}
+function MiniStatusBadge({
+  className,
+  status,
+}: {
+  className?: string;
+  status: string;
+}) {
+  const colours: Record<string, string> = {
+    completed: "bg-green-600 text-white",
+    "in-progress": "bg-orange-500 text-white",
+    planned: "bg-gray-700 text-gray-300",
+  };
+  const cls = colours[status] ?? "bg-gray-700 text-gray-300";
+  return (
+    <span
+      className={cn(
+        `text-xs p-1 size-6 text-center rounded-full ${cls}`,
+        className,
+      )}
+    >
+      {status.charAt(0)}
+    </span>
   );
 }
 
@@ -96,16 +129,26 @@ function SessionCard({
         params={{ id: session._id }}
         className="flex-1 p-3 min-w-0"
       >
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-medium text-sm">{session.name}</span>
-          <StatusBadge status={session.status} />
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 mb-0.5">
+          <span className="font-medium text-lg md:text-sm capitalize flex items-center gap-1">
+            {session.name}
+            <MiniStatusBadge
+              className="block md:hidden"
+              status={session.status}
+            />
+          </span>
+          <StatusBadge className="hidden md:block" status={session.status} />
         </div>
         <div className="text-xs text-gray-400 flex gap-3">
           <span>{formatDate(session.createdAt)}</span>
           {session.exercises.length > 0 && (
-            <span>{session.exercises.length} exercises</span>
+            <span className="hidden md:block">
+              {session.exercises.length} exercises
+            </span>
           )}
-          {session.totalSets > 0 && <span>{session.totalSets} sets</span>}
+          {session.totalSets > 0 && (
+            <span className="hidden md:block">{session.totalSets} sets</span>
+          )}
         </div>
       </Link>
 
@@ -118,7 +161,10 @@ function SessionCard({
             No
           </button>
           <button
-            onClick={() => { onDelete(); setConfirming(false); }}
+            onClick={() => {
+              onDelete();
+              setConfirming(false);
+            }}
             disabled={isDeleting}
             className="px-2 py-1.5 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-500 disabled:opacity-40"
           >
