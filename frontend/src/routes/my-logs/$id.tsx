@@ -13,7 +13,7 @@ import {
   useWatch,
 } from "react-hook-form";
 import { useListExercises } from "../../api/exercises/use-list-exercises";
-import ExerciseOptGroups from "../../ui/exercise-opt-groups";
+import FilterableExerciseSelect from "../../ui/filterable-exercise-select";
 import type {
   PopulatedExercise,
   WorkoutExercise,
@@ -171,27 +171,18 @@ function ActiveLog() {
 
         {session.status !== "completed" && (
           <div className="mb-8">
-            <select
-              value=""
-              onChange={(e) => handleAddExercise(e.target.value)}
-              disabled={
-                addExercise.isPending ||
-                !availableExercises ||
-                availableExercises.length === 0
-              }
-              className="w-full p-4 border border-dashed rounded bg-transparent text-sm text-gray-400 capitalize hover:border-orange-400 transition-colors disabled:opacity-40"
-            >
-              <option value="">
-                {!availableExercises || availableExercises.length === 0
-                  ? "— all exercises added —"
-                  : addExercise.isPending
-                    ? "Adding..."
-                    : "+ Add exercise"}
-              </option>
-              {availableExercises && (
-                <ExerciseOptGroups exercises={availableExercises} />
-              )}
-            </select>
+            {!availableExercises || availableExercises.length === 0 ? (
+              <div className="w-full p-4 border border-dashed rounded text-sm text-gray-500 text-center opacity-40">
+                — all exercises added —
+              </div>
+            ) : (
+              <FilterableExerciseSelect
+                exercises={availableExercises}
+                onSelect={handleAddExercise}
+                disabled={addExercise.isPending}
+                placeholder={addExercise.isPending ? "Adding..." : "+ Add exercise"}
+              />
+            )}
           </div>
         )}
 
@@ -751,7 +742,7 @@ function ExerciseCard({
                           setIndex={setIndex}
                           field="weight"
                           step={2.5}
-                          steps={[1, 2.5, 5, 10]}
+                          steps={[0.5, 1, 2.5, 5, 10]}
                         />
                       </>
                     )}

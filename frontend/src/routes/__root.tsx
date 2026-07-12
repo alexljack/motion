@@ -1,5 +1,4 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { useState } from "react";
 import { MobileNav, Sidebar, TopBar } from "../ui";
 
@@ -17,7 +16,6 @@ function RootLayout() {
           <Outlet />
         </div>
       </div>
-      <TanStackRouterDevtools />
     </div>
   );
 }
