@@ -13,7 +13,7 @@ import {
   useWatch,
 } from "react-hook-form";
 import { useListExercises } from "../../api/exercises/use-list-exercises";
-import ExerciseOptGroups from "../../ui/exercise-opt-groups";
+import FilterableExerciseSelect from "../../ui/filterable-exercise-select";
 import type {
   PopulatedExercise,
   WorkoutExercise,
@@ -171,27 +171,18 @@ function ActiveLog() {
 
         {session.status !== "completed" && (
           <div className="mb-8">
-            <select
-              value=""
-              onChange={(e) => handleAddExercise(e.target.value)}
-              disabled={
-                addExercise.isPending ||
-                !availableExercises ||
-                availableExercises.length === 0
-              }
-              className="w-full p-4 border border-dashed rounded bg-transparent text-sm text-gray-400 capitalize hover:border-orange-400 transition-colors disabled:opacity-40"
-            >
-              <option value="">
-                {!availableExercises || availableExercises.length === 0
-                  ? "— all exercises added —"
-                  : addExercise.isPending
-                    ? "Adding..."
-                    : "+ Add exercise"}
-              </option>
-              {availableExercises && (
-                <ExerciseOptGroups exercises={availableExercises} />
-              )}
-            </select>
+            {!availableExercises || availableExercises.length === 0 ? (
+              <div className="w-full p-4 border border-dashed rounded text-sm text-gray-500 text-center opacity-40">
+                — all exercises added —
+              </div>
+            ) : (
+              <FilterableExerciseSelect
+                exercises={availableExercises}
+                onSelect={handleAddExercise}
+                disabled={addExercise.isPending}
+                placeholder={addExercise.isPending ? "Adding..." : "+ Add exercise"}
+              />
+            )}
           </div>
         )}
 
@@ -389,17 +380,21 @@ function SetStepper({
   setIndex,
   field,
   step,
+  defaultStep,
   steps,
+  presets,
   min = 0,
 }: {
   exerciseIndex: number;
   setIndex: number;
   field: keyof SetValues;
   step: number;
+  defaultStep?: number;
   steps?: number[];
+  presets?: number[];
   min?: number;
 }) {
-  const [activeStep, setActiveStep] = useState(step);
+  const [activeStep, setActiveStep] = useState(defaultStep ?? step);
   const { setValue } = useFormContext<FormValues>();
   const name = `exercises.${exerciseIndex}.sets.${setIndex}.${field}` as const;
   // useWatch instead of local state so mobile + desktop layouts stay in sync
@@ -445,19 +440,42 @@ function SetStepper({
         </button>
       </div>
       {steps && (
-        <div className="flex gap-1">
+        <div className="grid grid-cols-4 gap-1">
           {steps.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setActiveStep(s)}
-              className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
+              className={`py-1 rounded text-xs font-medium transition-colors ${
                 activeStep === s
                   ? "bg-orange-500 text-black"
                   : "border border-black text-gray-400 hover:border-orange-400"
               }`}
             >
               {Number.isInteger(s) ? s : s.toFixed(1)}
+            </button>
+          ))}
+        </div>
+      )}
+      {presets && (
+        <div className="grid grid-cols-4 gap-1">
+          {presets.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() =>
+                setValue(
+                  name as unknown as Parameters<typeof setValue>[0],
+                  p,
+                )
+              }
+              className={`py-1 rounded text-xs font-medium transition-colors ${
+                val === p
+                  ? "bg-orange-500 text-black"
+                  : "border border-black text-gray-400 hover:border-orange-400"
+              }`}
+            >
+              {p}
             </button>
           ))}
         </div>
@@ -499,13 +517,22 @@ function ExerciseCard({
   });
 
   const [collapsed, setCollapsed] = useState(true);
+  const [pendingDeleteSet, setPendingDeleteSet] = useState<number | null>(null);
+  const [confirmRemoveExercise, setConfirmRemoveExercise] = useState(false);
   const [completedStates, setCompletedStates] = useState<boolean[]>(() =>
+    (exercise.sets ?? []).map((s) => s.completed),
+  );
+  const [collapsedSets, setCollapsedSets] = useState<boolean[]>(() =>
     (exercise.sets ?? []).map((s) => s.completed),
   );
 
   const setsLength = exercise.sets?.length ?? 0;
   useEffect(() => {
-    setCompletedStates((exercise.sets ?? []).map((s) => s.completed));
+    const sets = exercise.sets ?? [];
+    setCompletedStates(sets.map((s) => s.completed));
+    setCollapsedSets((prev) =>
+      sets.map((s, i) => (i < prev.length ? prev[i] : s.completed)),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setsLength]);
 
@@ -520,6 +547,13 @@ function ExerciseCard({
       next[setIndex] = newCompleted;
       return next;
     });
+    if (newCompleted) {
+      setCollapsedSets((prev) => {
+        const next = [...prev];
+        next[setIndex] = true;
+        return next;
+      });
+    }
     updateSet.mutateAsync({
       sessionId,
       exerciseIndex,
@@ -595,15 +629,37 @@ function ExerciseCard({
           </div>
         </button>
         {onRemove && !collapsed && (
-          <button
-            type="button"
-            onClick={onRemove}
-            disabled={isRemoving}
-            className="ml-3 w-10 h-10 flex items-center  lg:items-start justify-center text-gray-400 hover:text-red-400 text-2xl disabled:opacity-40 shrink-0"
-            title="Remove exercise"
-          >
-            ×
-          </button>
+          <div className="ml-3 shrink-0 flex items-center gap-1">
+            {confirmRemoveExercise ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => { setConfirmRemoveExercise(false); onRemove(); }}
+                  disabled={isRemoving}
+                  className="px-2 h-8 rounded text-xs font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 transition-colors"
+                >
+                  Remove
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmRemoveExercise(false)}
+                  className="px-2 h-8 rounded text-xs text-gray-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmRemoveExercise(true)}
+                disabled={isRemoving}
+                className="w-10 h-10 flex items-center lg:items-start justify-center text-gray-400 hover:text-red-400 text-2xl disabled:opacity-40 transition-colors"
+                title="Remove exercise"
+              >
+                ×
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -639,86 +695,135 @@ function ExerciseCard({
               const setNumber = serverSet?.setNumber ?? setIndex + 1;
               const completed = completedStates[setIndex] ?? false;
 
+              const setCollapsed = collapsedSets[setIndex] ?? false;
+
               return (
                 <div key={field.id}>
                   {/* ── Mobile card layout ── */}
                   <div
-                    className={`lg:hidden p-3 border rounded-lg flex flex-col gap-3 transition-colors ${
+                    className={`lg:hidden border rounded-lg transition-colors ${
                       completed ? "bg-orange-500/10 border-orange-500/30" : ""
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-gray-400">
-                        Set {setNumber}
-                      </span>
-                      {!sessionCompleted && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSet(setIndex, setNumber)}
-                          disabled={deleteSet.isPending}
-                          className="w-10 h-10 rounded-lg border border-red-500/40 text-red-500 text-lg hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                    {/* Set header — always visible */}
+                    <div className="flex items-center justify-between p-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setCollapsedSets((prev) => {
+                            const next = [...prev];
+                            next[setIndex] = !next[setIndex];
+                            return next;
+                          })
+                        }
+                        className="flex items-center gap-2 text-sm font-semibold text-gray-400"
+                      >
+                        <span
+                          className={`text-gray-500 text-xs transition-transform duration-200 ${setCollapsed ? "-rotate-90" : "rotate-0"}`}
                         >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      {isCardio ? (
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-gray-400 text-center">
-                            Duration (s)
+                          ▼
+                        </span>
+                        Set {setNumber}
+                        {setCollapsed && completed && (
+                          <span className="text-orange-400 text-xs font-normal ml-1">
+                            ✓
                           </span>
-                          <SetStepper
-                            exerciseIndex={exerciseIndex}
-                            setIndex={setIndex}
-                            field="durationInSeconds"
-                            step={5}
-                          />
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400 text-center">
-                              Reps
-                            </span>
-                            <SetStepper
-                              exerciseIndex={exerciseIndex}
-                              setIndex={setIndex}
-                              field="reps"
-                              step={1}
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400 text-center">
-                              kg
-                            </span>
-                            <SetStepper
-                              exerciseIndex={exerciseIndex}
-                              setIndex={setIndex}
-                              field="weight"
-                              step={2.5}
-                              steps={[1, 2.5, 5, 10]}
-                            />
-                          </div>
-                        </>
-                      )}
+                        )}
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          disabled={sessionCompleted}
+                          type="button"
+                          onClick={() =>
+                            handleToggleCompleted(setIndex, setNumber, completed)
+                          }
+                          className={`w-10 h-10 rounded-lg border-2 text-sm font-bold transition-colors ${
+                            completed
+                              ? "bg-orange-500 border-orange-500 text-black"
+                              : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
+                          }`}
+                        >
+                          ✓
+                        </button>
+                        {!sessionCompleted && (
+                          pendingDeleteSet === setIndex ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { setPendingDeleteSet(null); handleDeleteSet(setIndex, setNumber); }}
+                                disabled={deleteSet.isPending}
+                                className="px-2 h-10 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 transition-colors"
+                              >
+                                Delete
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPendingDeleteSet(null)}
+                                className="px-2 h-10 rounded-lg text-xs text-gray-400 hover:text-white transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setPendingDeleteSet(setIndex)}
+                              disabled={deleteSet.isPending}
+                              className="w-10 h-10 rounded-lg border border-red-500/40 text-red-500 text-lg hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
 
-                    <button
-                      disabled={sessionCompleted}
-                      type="button"
-                      onClick={() =>
-                        handleToggleCompleted(setIndex, setNumber, completed)
-                      }
-                      className={`w-full h-14 rounded-lg border-2 font-bold transition-colors ${
-                        completed
-                          ? "bg-orange-500 border-orange-500 text-black"
-                          : "border-white/30 text-gray-400 hover:border-orange-400 active:bg-white/5"
-                      }`}
-                    >
-                      ✓
-                    </button>
+                    {/* Steppers — collapsible */}
+                    {!setCollapsed && (
+                      <div className="flex flex-col gap-3 px-3 pb-3">
+                        {isCardio ? (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 text-center">
+                              Duration (s)
+                            </span>
+                            <SetStepper
+                              exerciseIndex={exerciseIndex}
+                              setIndex={setIndex}
+                              field="durationInSeconds"
+                              step={5}
+                            />
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-xs text-gray-400 text-center">
+                                Reps
+                              </span>
+                              <SetStepper
+                                exerciseIndex={exerciseIndex}
+                                setIndex={setIndex}
+                                field="reps"
+                                step={1}
+                                presets={[5, 6, 8, 12]}
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-xs text-gray-400 text-center">
+                                kg
+                              </span>
+                              <SetStepper
+                                exerciseIndex={exerciseIndex}
+                                setIndex={setIndex}
+                                field="weight"
+                                step={2.5}
+                                defaultStep={5}
+                                steps={[0.5, 1, 2.5, 5, 10, 15, 20, 25]}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* ── Desktop row layout ── */}
@@ -745,13 +850,15 @@ function ExerciseCard({
                           setIndex={setIndex}
                           field="reps"
                           step={1}
+                          presets={[5, 6, 8, 12]}
                         />
                         <SetStepper
                           exerciseIndex={exerciseIndex}
                           setIndex={setIndex}
                           field="weight"
                           step={2.5}
-                          steps={[1, 2.5, 5, 10]}
+                          defaultStep={5}
+                          steps={[0.5, 1, 2.5, 5, 10, 15, 20, 25]}
                         />
                       </>
                     )}
@@ -773,14 +880,34 @@ function ExerciseCard({
                       </button>
 
                       {!sessionCompleted && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSet(setIndex, setNumber)}
-                          disabled={deleteSet.isPending}
-                          className="w-8 h-8 shrink-0 rounded-lg border border-red-500/40 text-red-500 text-sm hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
-                        >
-                          ✕
-                        </button>
+                        pendingDeleteSet === setIndex ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => { setPendingDeleteSet(null); handleDeleteSet(setIndex, setNumber); }}
+                              disabled={deleteSet.isPending}
+                              className="px-2 h-8 shrink-0 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 transition-colors"
+                            >
+                              Delete
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPendingDeleteSet(null)}
+                              className="px-2 h-8 shrink-0 rounded-lg text-xs text-gray-400 hover:text-white transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setPendingDeleteSet(setIndex)}
+                            disabled={deleteSet.isPending}
+                            className="w-8 h-8 shrink-0 rounded-lg border border-red-500/40 text-red-500 text-sm hover:bg-red-500 hover:text-white active:bg-red-600 disabled:opacity-40 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
