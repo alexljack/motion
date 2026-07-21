@@ -324,30 +324,80 @@ const deleteWorkoutSession = asyncHandler(async (req, res) => {
 const getWorkoutStats = asyncHandler(async (req, res) => {
   const { period = "30d" } = req.query;
 
-  let dateFilter = {};
   const now = new Date();
+  const matchStage = { user: req.user._id, status: "completed" };
 
   switch (period) {
     case "7d":
-      dateFilter = { $gte: new Date(now.setDate(now.getDate() - 7)) };
+      matchStage.completedAt = { $gte: new Date(now.setDate(now.getDate() - 7)) };
       break;
     case "30d":
-      dateFilter = { $gte: new Date(now.setDate(now.getDate() - 30)) };
+      matchStage.completedAt = { $gte: new Date(now.setDate(now.getDate() - 30)) };
       break;
     case "90d":
-      dateFilter = { $gte: new Date(now.setDate(now.getDate() - 90)) };
+      matchStage.completedAt = { $gte: new Date(now.setDate(now.getDate() - 90)) };
       break;
     case "1y":
-      dateFilter = { $gte: new Date(now.setFullYear(now.getFullYear() - 1)) };
+      matchStage.completedAt = { $gte: new Date(now.setFullYear(now.getFullYear() - 1)) };
       break;
+    case "week": {
+      const d = new Date(now);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // back to Monday
+      matchStage.completedAt = { $gte: d };
+      break;
+    }
+    case "month": {
+      const d = new Date(now.getFullYear(), now.getMonth(), 1);
+      matchStage.completedAt = { $gte: d };
+      break;
+    }
+    case "year": {
+      const d = new Date(now.getFullYear(), 0, 1);
+      matchStage.completedAt = { $gte: d };
+      break;
+    }
+    // "all" — no completedAt filter
   }
 
   const stats = await WorkoutSession.aggregate([
+    { $match: matchStage },
     {
-      $match: {
-        user: req.user._id,
-        status: "completed",
-        completedAt: dateFilter,
+      $addFields: {
+        computedWeight: {
+          $reduce: {
+            input: "$exercises",
+            initialValue: 0,
+            in: {
+              $add: [
+                "$$value",
+                {
+                  $reduce: {
+                    input: "$$this.sets",
+                    initialValue: 0,
+                    in: {
+                      $add: [
+                        "$$value",
+                        {
+                          $cond: [
+                            "$$this.completed",
+                            {
+                              $multiply: [
+                                { $ifNull: ["$$this.weight", 0] },
+                                { $ifNull: ["$$this.reps", 0] },
+                              ],
+                            },
+                            0,
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
       },
     },
     {
@@ -356,7 +406,7 @@ const getWorkoutStats = asyncHandler(async (req, res) => {
         totalWorkouts: { $sum: 1 },
         totalSets: { $sum: "$totalSets" },
         totalReps: { $sum: "$totalReps" },
-        totalWeight: { $sum: "$totalWeight" },
+        totalWeight: { $sum: "$computedWeight" },
         avgDuration: { $avg: "$duration" },
         avgRating: { $avg: "$rating" },
         avgRpe: { $avg: "$avgRpe" },
