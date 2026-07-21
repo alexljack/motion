@@ -5,6 +5,8 @@ import { LastWorkoutWidget } from "../ui/widgets/last-workout-widget";
 import { WorkoutStreakWidget } from "../ui/widgets/workout-streak-widget";
 import { WeightTrendWidget } from "../ui/widgets/weight-trend-widget";
 import { TotalLiftedWidget } from "../ui/widgets/total-lifted-widget";
+import { TotalWorkoutsWidget } from "../ui/widgets/total-workouts-widget";
+import { HeaviestLiftsWidget } from "../ui/widgets/heaviest-lifts-widget";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async ({ location }) => {
@@ -37,6 +39,12 @@ function Homepage() {
         </div>
         <div>
           <TotalLiftedWidget />
+        </div>
+        <div>
+          <TotalWorkoutsWidget />
+        </div>
+        <div className="md:col-span-2">
+          <HeaviestLiftsWidget />
         </div>
       </div>
     </PageWrapper>

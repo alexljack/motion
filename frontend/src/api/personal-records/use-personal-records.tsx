@@ -30,6 +30,17 @@ export const useExercisePersonalRecords = (exerciseId: string) => {
   });
 };
 
+// Get heaviest lift PRs for main compound exercises
+export const useMainLifts = () => {
+  return useQuery({
+    queryKey: ["personal-records", "main-lifts"],
+    queryFn: async () => {
+      const response = await axios.get("/api/personal-records/main-lifts");
+      return response.data as { key: string; label: string; weight: number | null }[];
+    },
+  });
+};
+
 // Get recent personal records
 export const useRecentPersonalRecords = (limit: number = 10) => {
   return useQuery({

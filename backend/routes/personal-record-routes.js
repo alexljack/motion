@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import asyncHandler from "../middleware/async-handler.js";
 import PersonalRecord from "../models/personal-record-model.js";
+import Exercise from "../models/exercise-model.js";
 import { protect } from "../middleware/auth-middleware.js";
 
 router.use(protect);
@@ -42,6 +43,46 @@ router.get(
       .sort({ recordType: 1, achievedDate: -1 });
 
     res.json(records);
+  })
+);
+
+// @desc Get heaviest (max-weight) PR for the main compound lifts
+// @route GET /api/personal-records/main-lifts
+// @access Private
+router.get(
+  "/main-lifts",
+  asyncHandler(async (req, res) => {
+    const MAIN_LIFTS = [
+      { key: "bench-press",     label: "Bench Press",      name: "bench press" },
+      { key: "deadlift",        label: "Deadlift",         name: "deadlifts" },
+      { key: "squat",           label: "Squat",            name: "squats" },
+      { key: "pull-ups",        label: "Pull Ups",         name: "pull ups" },
+      { key: "dips",            label: "Dips",             name: "dips" },
+      { key: "overhead-press",  label: "Overhead Press",   name: "overhead press" },
+    ];
+
+    const exercises = await Exercise.find({
+      name: { $in: MAIN_LIFTS.map((l) => l.name) },
+    }).select("_id name");
+
+    const exerciseMap = Object.fromEntries(exercises.map((e) => [e.name, e._id]));
+
+    const exerciseIds = exercises.map((e) => e._id);
+    const records = await PersonalRecord.find({
+      user: req.user._id,
+      exercise: { $in: exerciseIds },
+      recordType: "max-weight",
+    }).select("exercise value achievedDate");
+
+    const prMap = Object.fromEntries(records.map((r) => [r.exercise.toString(), r.value]));
+
+    const result = MAIN_LIFTS.map((lift) => {
+      const exerciseId = exerciseMap[lift.name];
+      const weight = exerciseId ? (prMap[exerciseId.toString()] ?? null) : null;
+      return { key: lift.key, label: lift.label, weight };
+    });
+
+    res.json(result);
   })
 );
 
