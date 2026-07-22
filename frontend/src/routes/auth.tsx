@@ -8,6 +8,8 @@ import {
 import { useEffect } from "react";
 
 import useAuth from "../api/authentication/use-auth";
+import Input from "../ui/form/input";
+import Button from "../ui/button/button";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
@@ -48,41 +50,42 @@ function RouteComponent() {
   };
 
   return (
-    <div>
-      Hello "/auth"!
+    <div className="flex flex-col items-center h-full">
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-2">
+        <form
+          className="flex flex-col items-center justify-center gap-4 h-3/4"
+          onSubmit={methods.handleSubmit(onSubmit)}
+        >
+          <div className="text-4xl italic font-bold mb-4">Motion</div>
+          <div className="flex flex-col gap-2 w-full">
             <div>
-              <label>
-                Email
-                <input
-                  disabled={isPending}
-                  placeholder="email"
-                  {...methods.register("email")}
-                />
-              </label>
+              <Input
+                label="Email"
+                disabled={isPending}
+                placeholder="email"
+                {...methods.register("email")}
+              />
             </div>
             <div>
-              <label>
-                Password
-                <input
-                  disabled={isPending}
-                  placeholder="password"
-                  {...methods.register("password")}
-                />
-              </label>
+              <Input
+                label="Password"
+                disabled={isPending}
+                placeholder="password"
+                {...methods.register("password")}
+              />
             </div>
           </div>
-          <button disabled={isPending} type="submit">
+          <Button disabled={isPending} type="submit">
             Login
-          </button>
+          </Button>
+          <div className="mt-4 flex flex-col gap-2">
+            New user?
+            <Link to="/register" search={redirect ? { redirect } : undefined}>
+              <Button>Register</Button>
+            </Link>
+          </div>
         </form>
       </FormProvider>
-      New user?
-      <Link to="/register" search={redirect ? { redirect } : undefined}>
-        Register
-      </Link>
     </div>
   );
 }

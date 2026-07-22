@@ -41,11 +41,13 @@ const TopBar = ({ onMenuOpen }: TopBarProps) => {
         {/* <button className={buttonStyles} disabled>
           Language
         </button> */}
+
         <Link to="/profile">
           <button className={buttonStyles}>
             <UserIcon />
           </button>
         </Link>
+
         <button className={buttonStyles} onClick={() => logout()}>
           Logout
         </button>
