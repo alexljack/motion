@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 function Homepage() {
   return (
     <PageWrapper pageName="Dashboard">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
         <div className="md:col-span-2">
           <LastWorkoutWidget />
         </div>
@@ -40,10 +40,10 @@ function Homepage() {
         <div>
           <TotalLiftedWidget />
         </div>
-        <div>
+        <div className="md:col-span-2">
           <TotalWorkoutsWidget />
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-3">
           <HeaviestLiftsWidget />
         </div>
       </div>
