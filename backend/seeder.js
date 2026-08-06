@@ -118,10 +118,67 @@ const upsertExercises = async () => {
   }
 };
 
+const upsertTemplateExercises = async () => {
+  try {
+    let inserted = 0;
+    let skipped = 0;
+    let missing = [];
+
+    for (const [workoutName, entries] of Object.entries(templateExercises)) {
+      const template = await WorkoutTemplate.findOne({ name: workoutName });
+      if (!template) {
+        console.log(`Template not found: "${workoutName}" — skipping`.yellow);
+        continue;
+      }
+
+      for (const entry of entries) {
+        const exercise = await Exercise.findOne({ name: entry.exerciseName });
+        if (!exercise) {
+          missing.push(entry.exerciseName);
+          continue;
+        }
+
+        const exists = await TemplateExercise.findOne({
+          workoutTemplate: template._id,
+          exercise: exercise._id,
+        });
+
+        if (exists) {
+          skipped++;
+        } else {
+          await TemplateExercise.create({
+            workoutTemplate: template._id,
+            exercise: exercise._id,
+            orderIndex: entry.orderIndex,
+            targetSets: entry.targetSets,
+            targetReps: entry.targetReps,
+            targetWeight: entry.targetWeight,
+            targetDurationSeconds: entry.targetDurationSeconds,
+            restSeconds: entry.restSeconds,
+            notes: entry.notes,
+          });
+          inserted++;
+        }
+      }
+    }
+
+    if (missing.length) {
+      console.log(`Exercises not found in DB: ${missing.join(", ")}`.yellow);
+    }
+    console.log(`Template exercises seeded: ${inserted} inserted, ${skipped} already existed.`.green.inverse);
+    process.exit();
+  } catch (error) {
+    console.error(`${error}`.red.inverse);
+    process.exit(1);
+  }
+};
+
 if (process.argv[2] === "--destroy") {
   destroyData();
 } else if (process.argv[2] === "--exercises-only") {
   upsertExercises();
+} else if (process.argv[2] === "--templates-only") {
+  upsertTemplateExercises();
 } else {
   importData();
 }

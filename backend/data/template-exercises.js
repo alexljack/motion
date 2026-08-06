@@ -17,6 +17,9 @@ const templateExercises = {
     { exerciseName: "seated cable row",     orderIndex: 4, targetSets: 3, targetReps: 12, restSeconds: 90 },
     { exerciseName: "barbell curl",         orderIndex: 5, targetSets: 3, targetReps: 12, restSeconds: 60 },
     { exerciseName: "dumbbell curl",        orderIndex: 6, targetSets: 3, targetReps: 12, restSeconds: 60 },
+    { exerciseName: "machine reverse fly",  orderIndex: 7, targetSets: 3, targetReps: 15, restSeconds: 60 },
+    { exerciseName: "dumbbell pullover",    orderIndex: 8, targetSets: 3, targetReps: 12, restSeconds: 60 },
+    { exerciseName: "cable pullover",       orderIndex: 9, targetSets: 3, targetReps: 12, restSeconds: 60 },
   ],
   "legs": [
     { exerciseName: "squats",               orderIndex: 0, targetSets: 4, targetReps: 8,  targetWeight: 155, restSeconds: 180 },
