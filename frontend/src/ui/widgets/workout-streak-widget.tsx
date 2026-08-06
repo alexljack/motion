@@ -8,14 +8,14 @@ function daysBetween(a: Date, b: Date) {
   return Math.round(Math.abs(a.getTime() - b.getTime()) / 86_400_000);
 }
 
-function computeStreak(sessions: { completedAt: string }[]) {
+function computeStreak(sessions: { startedAt: string }[]) {
   if (sessions.length === 0) return 0;
 
   // One entry per calendar day, most recent first
   const seen = new Set<string>();
   const uniqueDays: Date[] = [];
   for (const s of sessions) {
-    const d = new Date(s.completedAt);
+    const d = new Date(s.startedAt);
     const key = d.toISOString().slice(0, 10);
     if (!seen.has(key)) {
       seen.add(key);
