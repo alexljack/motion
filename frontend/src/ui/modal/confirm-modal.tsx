@@ -26,8 +26,10 @@ const ConfirmModal = ({
 }: ConfirmModalProps) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-      {description && <p className="text-sm text-gray-500">{description}</p>}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+      {description && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+      )}
 
       <div className="flex gap-3 mt-2">
         <Button variant="outline" className="flex-1" onClick={onClose}>
