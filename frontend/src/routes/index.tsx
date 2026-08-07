@@ -29,19 +29,19 @@ function Homepage() {
     <PageWrapper pageName="Dashboard">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
         <div className="md:col-span-2">
-          <LastWorkoutWidget />
+          <TotalWorkoutsWidget />
         </div>
         <div>
           <WorkoutStreakWidget />
         </div>
         <div className="md:col-span-2">
-          <WeightTrendWidget />
-        </div>
-        <div>
           <TotalLiftedWidget />
         </div>
-        <div className="md:col-span-2">
-          <TotalWorkoutsWidget />
+        <div>
+          <LastWorkoutWidget />
+        </div>
+        <div className="md:col-span-3">
+          <WeightTrendWidget />
         </div>
         <div className="md:col-span-3">
           <HeaviestLiftsWidget />

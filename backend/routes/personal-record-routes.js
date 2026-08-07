@@ -53,12 +53,18 @@ router.get(
   "/main-lifts",
   asyncHandler(async (req, res) => {
     const MAIN_LIFTS = [
-      { key: "bench-press",     label: "Bench Press",      name: "bench press" },
-      { key: "deadlift",        label: "Deadlift",         name: "deadlifts" },
-      { key: "squat",           label: "Squat",            name: "squats" },
-      { key: "pull-ups",        label: "Pull Ups",         name: "pull ups" },
-      { key: "dips",            label: "Dips",             name: "dips" },
-      { key: "overhead-press",  label: "Overhead Press",   name: "overhead press" },
+      { key: "bench-press",       label: "Bench Press",        name: "bench press" },
+      { key: "deadlift",          label: "Deadlift",           name: "deadlifts" },
+      { key: "squat",             label: "Squat",              name: "squats" },
+      { key: "pull-ups",          label: "Pull Ups",           name: "pull ups" },
+      { key: "dips",              label: "Dips",                name: "dips" },
+      { key: "overhead-press",    label: "Overhead Press",     name: "overhead press" },
+      { key: "barbell-row",       label: "Barbell Row",        name: "barbell row" },
+      { key: "incline-bench",     label: "Incline Bench Press", name: "incline bench press" },
+      { key: "romanian-deadlift", label: "Romanian Deadlift",  name: "romanian deadlift" },
+      { key: "front-squat",       label: "Front Squat",        name: "front squat" },
+      { key: "leg-press",         label: "Leg Press",          name: "leg press" },
+      { key: "lat-pulldown",      label: "Lat Pulldown",       name: "lat pulldown" },
     ];
 
     const exercises = await Exercise.find({

@@ -51,7 +51,7 @@ export function TotalLiftedWidget() {
   const { data, isLoading } = useWorkoutStats(period);
 
   return (
-    <div className="border rounded-lg p-4 flex flex-col gap-3">
+    <div className="h-full border rounded-lg p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-gray-400 uppercase tracking-wide">
           Total Lifted

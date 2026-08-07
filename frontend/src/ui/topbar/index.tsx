@@ -1,6 +1,9 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { MenuIcon, UserIcon } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { ChevronDownIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
 import useLogout from "../../api/authentication/use-logout";
+import Dropdown from "../dropdown";
+import ConfirmModal from "../modal/confirm-modal";
 
 type TopBarProps = {
   onMenuOpen: () => void;
@@ -8,7 +11,8 @@ type TopBarProps = {
 
 const TopBar = ({ onMenuOpen }: TopBarProps) => {
   const goTo = useNavigate();
-  const { mutate: logout } = useLogout({
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { mutate: logout, isPending: isLoggingOut } = useLogout({
     onError: (err: Error) => {
       console.log(err);
     },
@@ -19,11 +23,8 @@ const TopBar = ({ onMenuOpen }: TopBarProps) => {
     },
   });
 
-  const buttonStyles =
-    "border rounded p-1 cursor-pointer disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed";
-
   return (
-    <div className="h-12 flex items-center bg-white w-full px-3 gap-3">
+    <div className="h-12 flex items-center bg-gray-900 w-full drop-shadow-2xl px-3 gap-3">
       {/* Hamburger — only visible on mobile/tablet */}
       <button
         type="button"
@@ -42,16 +43,37 @@ const TopBar = ({ onMenuOpen }: TopBarProps) => {
           Language
         </button> */}
 
-        <Link to="/profile">
-          <button className={buttonStyles}>
+        <Dropdown>
+          <Dropdown.Trigger className="flex items-center gap-1 h-10 px-4 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors">
             <UserIcon />
-          </button>
-        </Link>
+            <ChevronDownIcon size={16} />
+          </Dropdown.Trigger>
 
-        <button className={buttonStyles} onClick={() => logout()}>
-          Logout
-        </button>
+          <Dropdown.Content>
+            <Dropdown.Item icon={<UserIcon size={16} />} onClick={() => goTo({ to: "/profile" })}>
+              Profile
+            </Dropdown.Item>
+            <Dropdown.Item
+              icon={<LogOutIcon size={16} />}
+              destructive
+              onClick={() => setShowLogoutConfirm(true)}
+            >
+              Logout
+            </Dropdown.Item>
+          </Dropdown.Content>
+        </Dropdown>
       </div>
+
+      <ConfirmModal
+        open={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={() => logout()}
+        title="Log out?"
+        description="You'll need to sign in again to access your account."
+        confirmLabel="Log out"
+        destructive
+        isPending={isLoggingOut}
+      />
     </div>
   );
 };
