@@ -29,7 +29,10 @@ const Sidebar = () => {
         {!collapsed ? (
           <span className="font-semibold italic">Motion</span>
         ) : (
-          <img src="/assets/logo-light.png" className="size-12" />
+          <img
+            src={theme === "dark" ? "/assets/logo-dark.png" : "/assets/logo-light.png"}
+            className="size-12"
+          />
         )}
       </div>
       <div className="h-full flex flex-col gap-2">
